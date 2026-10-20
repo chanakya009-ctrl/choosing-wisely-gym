@@ -1,0 +1,1322 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body style="margin:0">
+<title>Choosing Wisely Gym</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: graph-paper exam sheet (same system as COMP 171 Gym); sticky header + tab rail; one column of sheets, max 980px. Ink-blue pen, pencil-yellow highlight, red-pen corrections. Decision tables are the signature element. */
+:root{
+  --paper:#f4f7fb; --sheet:#ffffff; --ink:#17213b; --muted:#5b6782; --line:#d8dfeb; --grid:rgba(38,71,184,.07);
+  --accent:#2647b8; --accent-ink:#ffffff; --accent-soft:#e6ecfb; --pencil:#f5d565; --pencil-soft:#fff6cf;
+  --pass:#1b7a4c; --pass-soft:#e2f4ea; --fail:#c0352a; --fail-soft:#fbe7e4; --code-bg:#eef2f9; --code-ink:#1d2a4d;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0e1422; --sheet:#151d2f; --ink:#e3e8f4; --muted:#9aa5bf; --line:#28324b; --grid:rgba(138,166,255,.05);
+  --accent:#8ea8ff; --accent-ink:#0e1422; --accent-soft:#1e2944; --pencil:#e6c35a; --pencil-soft:#2e2a17;
+  --pass:#5ccb95; --pass-soft:#14301f; --fail:#ff8073; --fail-soft:#3a1b18; --code-bg:#0f1729; --code-ink:#dbe3f7; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0e1422; --sheet:#151d2f; --ink:#e3e8f4; --muted:#9aa5bf; --line:#28324b; --grid:rgba(138,166,255,.05);
+  --accent:#8ea8ff; --accent-ink:#0e1422; --accent-soft:#1e2944; --pencil:#e6c35a; --pencil-soft:#2e2a17;
+  --pass:#5ccb95; --pass-soft:#14301f; --fail:#ff8073; --fail-soft:#3a1b18; --code-bg:#0f1729; --code-ink:#dbe3f7; color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--paper)}
+body{background:var(--paper);color:var(--ink);font:15px/1.6 var(--body);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:22px 22px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px 6px;flex-wrap:wrap}
+.brand h1{font:800 22px/1 var(--display);font-stretch:85%;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.brand h1 b{color:var(--accent)}
+.chip{display:inline-flex;align-items:center;gap:6px;font:600 12px/1 var(--body);padding:6px 10px;border-radius:999px;background:var(--pencil-soft);border:1px solid var(--pencil);color:var(--ink);font-variant-numeric:tabular-nums}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;padding-block:6px 10px;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{flex:0 0 auto;border:1px solid transparent;background:none;color:var(--muted);font:600 13.5px/1 var(--body);padding:9px 12px;border-radius:8px;cursor:pointer}
+nav.tabs button:hover{color:var(--ink);background:var(--sheet)}
+nav.tabs button[aria-selected="true"]{color:var(--accent-ink);background:var(--accent)}
+main{padding-block:20px 60px}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:10px;padding:20px;min-width:0}
+.stack{display:flex;flex-direction:column;gap:16px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.grid2>*{min-width:0}
+h2{font:800 28px/1.1 var(--display);font-stretch:80%;margin:0 0 4px;text-wrap:balance}
+h3{font:700 18px/1.25 var(--display);font-stretch:95%;margin:0;text-wrap:balance}
+h4{font:600 12px/1.2 var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 6px}
+p{margin:0 0 8px;max-width:68ch}
+.lede{color:var(--muted);max-width:68ch;margin-bottom:4px}
+.muted{color:var(--muted)} .small{font-size:13px}
+.mono{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.btn{font:600 13.5px/1 var(--body);border:1px solid var(--line);background:var(--sheet);color:var(--ink);padding:10px 14px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ghost{background:none}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input[type=text],textarea,select{font:14px/1.5 var(--mono);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;font-family:var(--body);font-size:14.5px}
+input.ans{width:160px;max-width:100%}
+input.ok{border-color:var(--pass);background:var(--pass-soft)} input.bad{border-color:var(--fail);background:var(--fail-soft)}
+.pill{display:inline-block;font:600 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
+.pill.off{background:var(--pencil-soft);color:var(--ink);border:1px solid var(--pencil)}
+.pill.lvl{background:none;border:1px solid var(--line);color:var(--muted)}
+.ok{color:var(--pass)} .bad{color:var(--fail)}
+.verdict{border-radius:8px;padding:12px 14px;border:1px solid}
+.verdict.ok{background:var(--pass-soft);border-color:var(--pass);color:var(--ink)}
+.verdict.bad{background:var(--fail-soft);border-color:var(--fail);color:var(--ink)}
+.verdict strong.ok{color:var(--pass)} .verdict strong.bad{color:var(--fail)}
+a{color:var(--accent)}
+.day{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:start}
+@media(max-width:620px){.day{grid-template-columns:1fr}}
+.day .date{font:800 20px/1 var(--display);font-stretch:80%}
+.day .date span{display:block;font:500 12px/1.3 var(--body);color:var(--muted);margin-top:6px}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent)}
+.statrow{display:grid;grid-template-columns:minmax(120px,190px) 1fr 70px;gap:10px;align-items:center;font-size:13px;padding:3px 0}
+.statrow>*{min-width:0}
+.statrow .num{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted)}
+.statrow.weak .lbl{color:var(--fail);font-weight:600}
+.toc{display:flex;flex-wrap:wrap;gap:6px}
+.toc button{border:1px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:999px;padding:6px 11px;font:500 13px/1 var(--body);cursor:pointer}
+.toc button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.toc button .w{font-size:10px;margin-left:4px}
+.lessonhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.src{font-size:12px;color:var(--muted)}
+.tlist{display:flex;flex-wrap:wrap;gap:6px}
+.tlist button{border:1px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:8px;padding:7px 10px;font:500 13px/1.2 var(--body);cursor:pointer;text-align:left;max-width:100%}
+.tlist button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.tlist button .st{display:block;font-size:11px;color:var(--muted)}
+.tlist button.done .st{color:var(--pass)}
+.qmeta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.choices{display:grid;gap:8px}
+.choices button{text-align:left;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:10px 12px;font:14px/1.45 var(--body);cursor:pointer;display:flex;gap:10px}
+.choices button .k{font:700 12px/1.6 var(--mono);color:var(--muted)}
+.choices button:hover{border-color:var(--accent)}
+.choices button.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.choices button.right{border-color:var(--pass);background:var(--pass-soft)}
+.choices button.wrong{border-color:var(--fail);background:var(--fail-soft)}
+.scoreline{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.scoreline b{color:var(--ink)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--sheet);color:var(--muted);padding:8px 12px;font:600 13px/1 var(--body);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.parts{display:flex;flex-direction:column;gap:10px}
+.part{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+@media(max-width:560px){.part{grid-template-columns:1fr}}
+.timer{font:800 34px/1 var(--display);font-stretch:75%;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.timer.low{color:var(--fail)}
+.examhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;position:sticky;top:calc(env(safe-area-inset-top,0px) + 96px);z-index:5}
+@media(max-width:620px){.examhead{top:calc(env(safe-area-inset-top,0px) + 88px)}}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:10px}
+.qhead .pts{font:600 13px var(--mono);color:var(--muted)}
+.key{border-left:3px solid var(--pencil);background:var(--pencil-soft);padding:10px 14px;border-radius:0 8px 8px 0}
+.selfscore{display:flex;align-items:center;gap:8px;font-size:13px}
+.selfscore input{width:70px}
+.rubric{margin:4px 0 0;padding-left:0;list-style:none;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.rubric label{display:flex;gap:8px;align-items:flex-start}
+.rubric input{margin-top:4px;accent-color:var(--accent)}
+.modelans{white-space:pre-wrap;font-size:14px;background:var(--sheet);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:4px 0 8px}
+.total{font:800 44px/1 var(--display);font-stretch:75%;font-variant-numeric:tabular-nums}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:8px;font-size:13px;z-index:30}
+dl.terms{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr);gap:0;margin:4px 0 6px;border-top:1px solid var(--line)}
+dl.terms dt,dl.terms dd{min-width:0;padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+dl.terms dt{font:700 14px/1.35 var(--display);font-stretch:95%;padding-right:12px}
+dl.terms dd p{margin:0}
+@media(max-width:560px){dl.terms{grid-template-columns:minmax(0,1fr)}dl.terms dt{border-bottom:0;padding-bottom:0}}
+.flash{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--paper);text-align:center;min-height:150px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.flash .term{font:800 26px/1.15 var(--display);font-stretch:85%}
+/* lesson sheets */
+.lesson .sec{border-top:1px solid var(--line);padding-top:14px;margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.lesson .sec>h3{font:600 12px/1.2 var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.lesson ol,.lesson ul{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px;max-width:72ch}
+.lesson dl{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr);margin:0;border-top:1px solid var(--line)}
+.lesson dt,.lesson dd{min-width:0;padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+.lesson dt{font:700 14px/1.35 var(--display);font-stretch:95%;padding-right:12px}
+@media(max-width:560px){.lesson dl{grid-template-columns:minmax(0,1fr)}.lesson dt{border-bottom:0;padding-bottom:0}}
+.prem{font:13px/1.65 var(--mono);background:var(--code-bg);color:var(--code-ink);border:1px solid var(--line);border-radius:8px;padding:10px 14px;overflow-x:auto}
+.formula{font:13px/1.6 var(--mono);background:var(--code-bg);color:var(--code-ink);border-left:3px solid var(--accent);padding:10px 12px;border-radius:0 8px 8px 0;overflow-x:auto;white-space:pre-wrap}
+.callout{border-left:3px solid var(--pencil);background:var(--pencil-soft);padding:10px 14px;border-radius:0 8px 8px 0}
+ol.steps{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:4px;font:13px/1.55 var(--mono)}
+.tablewrap{overflow-x:auto;max-width:100%}
+table.dt{border-collapse:collapse;font-size:13.5px;min-width:300px;margin:4px 0}
+table.dt th,table.dt td{border:1px solid var(--line);padding:6px 10px;text-align:center;font-variant-numeric:tabular-nums}
+table.dt thead th{background:var(--paper);font:600 11px/1.3 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:2px solid var(--ink)}
+table.dt tbody th{text-align:left;background:var(--paper);font:600 13px var(--mono)}
+details summary{cursor:pointer;font-weight:600}
+@media (prefers-reduced-motion:no-preference){.fade{animation:fade .25s ease-out}@keyframes fade{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <h1>Choosing Wisely <b>Gym</b></h1>
+      <span class="chip" id="countdown">Exam 2 · Mon Nov 2</span>
+    </div>
+    <nav class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="home">Home</button>
+      <button role="tab" data-tab="learn">Learn</button>
+      <button role="tab" data-tab="calc">Calculation Lab</button>
+      <button role="tab" data-tab="sa">Short Answer Lab</button>
+      <button role="tab" data-tab="quiz">Quiz</button>
+      <button role="tab" data-tab="exams">Exams</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="main"></main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* =========================================================
+   CONTENT — drawn from the PHIL 204 Canvas materials
+   (slides L1–L19, HW1–HW5 + keys, Exam 1 study guide, assigned readings)
+   ========================================================= */
+const EXAM_DATE = "2026-11-02"; // syllabus + schedule: "11.02: Exam 2"
+const TOPICS = [
+  {id:"pascal", name:"Pascal's Wager", exam:1},
+  {id:"ev", name:"Expected value & utility scales", exam:0},
+  {id:"moral", name:"Moral uncertainty (Oddie)", exam:1},
+  {id:"qaly", name:"QALY", exam:1},
+  {id:"te", name:"Transformative experience", exam:1},
+  {id:"collective", name:"Collective action (Kagan)", exam:1},
+  {id:"harms", name:"Adding harms (Norcross)", exam:2},
+  {id:"prob", name:"Probability rules", exam:2},
+  {id:"bayes", name:"Hume, miracles & Bayes", exam:2},
+  {id:"doomsday", name:"Doomsday (Leslie)", exam:2},
+];
+const TNAME = Object.fromEntries(TOPICS.map(t=>[t.id,t.name]));
+// exam:0 = cumulative technique ("semi-cumulative: expected utility; setting utility scales" — slide L14)
+const SCOPES = {
+  e2:{label:"Exam 2 (Nov 2)", topics:["ev","harms","prob","bayes","doomsday"]},
+  e1:{label:"Exam 1 topics", topics:["pascal","ev","moral","qaly","te","collective"]},
+  all:{label:"Everything", topics:TOPICS.map(t=>t.id)},
+};
+
+/* ---------- helpers ---------- */
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function f(x,d=4){ if(!isFinite(x)) return String(x); if(Math.abs(x-Math.round(x))<1e-9) return String(Math.round(x)); let s=Number(x).toFixed(d); s=s.replace(/0+$/,'').replace(/\.$/,''); return s; }
+function fp(x){ // probabilities: keep enough digits for tiny numbers
+  if(x!==0 && Math.abs(x)<0.001) return Number(x).toPrecision(3);
+  return f(x,4);
+}
+const money=x=>(x<0?"−$":"$")+Math.abs(x).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function parseAns(s){
+  if(s==null) return NaN; s=String(s).trim().replace(/[$,\s]/g,"").replace(/−/g,"-");
+  if(!s) return NaN;
+  let pct=false; if(s.endsWith("%")){pct=true;s=s.slice(0,-1)}
+  let v;
+  const m=s.match(/^(-?\d*\.?\d+)\/(-?\d*\.?\d+)$/);
+  if(m) v=parseFloat(m[1])/parseFloat(m[2]); else if(/^-?\d*\.?\d+(e-?\d+)?$/i.test(s)) v=parseFloat(s); else return NaN;
+  return pct? v/100 : v;
+}
+function close(user,ans,tol){
+  if(!isFinite(user)) return false;
+  const t = tol!=null? tol : Math.max(Math.abs(ans)*0.01, 0.0006);
+  return Math.abs(user-ans)<=t;
+}
+function dtable(cols,rows){ // cols: header labels; rows: [label,...cells]
+  return `<div class="tablewrap"><table class="dt"><thead><tr><th></th>${cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr><th>${r[0]}</th>${r.slice(1).map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+
+/* =========================================================
+   LESSONS (one-page sheets, in Peeters' notation)
+   ========================================================= */
+const LESSONS = {
+formula:{title:"Formula sheet", src:"Exam 1 study guide · slides L1, L5, L7–L10, L13, L15–L19", html:`
+<div class="sec"><h3>Expected value / expected utility</h3>
+<div class="formula">EV[A] = Pr(C1|A)·V(C1|A) + Pr(C2|A)·V(C2|A) + … + Pr(Cn|A)·V(Cn|A)</div>
+<p>Rule (slide L1–L2, "Claim3"): rationality requires performing the action with the highest expected value.</p></div>
+<div class="sec"><h3>Utility from stated preference</h3>
+<div class="formula">Indifferent between C1 and C2  →  EU[C1] = EU[C2]
+Prefers C1 to C2             →  EU[C1] > EU[C2]
+You may fix two utilities (e.g. best = 1, worst = 0) and solve for the rest.</div></div>
+<div class="sec"><h3>Dominance (slide L1)</h3>
+<p>A1 dominates A2 iff for every state the outcome of A1 is at least as good as A2's, and for some state it is better.</p></div>
+<div class="sec"><h3>Oddie</h3><div class="formula">E[Experiment] = p(g − l) + (1 − p)g = g − p·l      E[Not] = 0
+Experiment just in case  g ≥ p·l</div></div>
+<div class="sec"><h3>QALY</h3><div class="formula">Standard gamble: indifferent at p cure / (1−p) death  →  QALY = p
+Time trade-off: 10 yrs in condition ≡ t yrs full health  →  QALY = t/10
+QALY gained = (new score − old score) × years  (+ extra years × their score)
+Cost per QALY = [cost of intervention] / [QALY gained]   (lower = prioritized)</div></div>
+<div class="sec"><h3>Pettigrew: global utility</h3><div class="formula">U[S|A1] = w_past·U_past[S|A1] + w_present·U_present[S|A1] + w_future·U_future[S|A1]
+(the w's sum to 1)</div></div>
+<div class="sec"><h3>Kagan (slide L13)</h3><div class="formula">B = bad effect, g = individual good, n = # of acts, T = threshold
+Claim1: B > n·g      If threshold reached, effect = T·B/n      Pr(your act triggers) = 1/T
+EU(act) = g − (1/T)(T·B/n) = g − B/n  &lt; 0</div></div>
+<div class="sec"><h3>Probability (slides L15–L17)</h3><div class="formula">Pr(A) = # A possibilities / # total     (all equally likely)
+Pr(A or B) = Pr(A) + Pr(B) − Pr(A and B)     (= Pr(A)+Pr(B) if exclusive)
+Pr(A and B) = Pr(A)·Pr(B|A) = Pr(B)·Pr(A|B)  (= Pr(A)·Pr(B) if independent)
+Pr(at least one) = 1 − Pr(none)
+Pr(A|B) = Pr(A and B) / Pr(B)</div></div>
+<div class="sec"><h3>Bayes's theorem (slide L18)</h3><div class="formula">Pr(T|E) = Pr(E|T)·Pr(T) / [ Pr(E|T)·Pr(T) + Pr(E|not T)·Pr(not T) ]</div></div>`},
+
+pascal:{title:"Pascal's Wager", topic:"pascal", src:"8.24–8.28 · slides L1–L3 · Jackson 2021 · Hájek 2003 §1–3, §4.2", html:`
+<div class="sec"><h3>Key terms</h3><dl>
+<dt>Decision table</dt><dd>Rows are your actions, columns are states of the world, cells are outcomes.</dd>
+<dt>Dominance</dt><dd>A1 dominates A2 iff in every state A1's outcome is at least as good as A2's, and in some state it is better. Claim: it is irrational to perform a dominated action.</dd>
+<dt>Expected value</dt><dd>Probability-weighted average of an act's outcomes. Used when no act dominates.</dd>
+<dt>Mixed strategy</dt><dd>An act that randomizes between pure acts, e.g. "flip a fair coin; believe iff heads."</dd>
+<dt>Many Gods objection</dt><dd>There are many possible gods that damn the believers of rival religions, so Pascal's 2×2 table is too simple.</dd></dl></div>
+<div class="sec"><h3>The arguments</h3>
+<p><b>Argument #1 (dominance), slide L1:</b></p>
+<div class="prem">(P1) Believing in God dominates not believing in God.<br>(P2) If A1 dominates A2 it is irrational to do A2 instead of A1.<br>(C) It is irrational not to believe in God.</div>
+<p>Objection on the slide: "Pascal has the outcomes wrong!" If there is no God, believing costs you something (finite loss) and not believing gains you something (finite gain), so belief does not dominate. That is why Pascal needs expected value.</p>
+${dtable(["God (p)","No God (1−p)"],[["Believe","+∞","−f1"],["Don't believe","−∞","+f2"]])}
+<p><b>Argument #2 (expected value), slide L2:</b></p>
+<div class="prem">Claim1: P(God) &gt; 0.<br>Claim2: EV[Believing] &gt; EV[Not Believing]<br>&nbsp;&nbsp;EV[Believing] = p(God)(+∞) + p(No God)(−f1)<br>&nbsp;&nbsp;EV[Not believing] = p(God)(−∞) + p(No God)(+f2)<br>Claim3: Rationality requires performing the action with the highest expected value.<br>Hence: Rationality requires belief in God.</div>
+<p>The power of the argument: any positive p times ∞ is ∞, so you never need to know how likely God is.</p></div>
+<div class="sec"><h3>Objections and replies</h3><ol>
+<li><b>Many Gods (L2).</b> Split the states into G1 (only Christian worshippers saved), G2 (only Islamic worshippers saved), G3 (everyone saved), ~G. Then every belief act has −∞ in some column, so the expected values are not well-defined and cannot be ranked.
+${dtable(["G1","G2","G3","~G"],[["B[G1]","+∞","−∞","+∞","−f1"],["B[G2]","−∞","+∞","+∞","−f2"],["B[G3]","−∞","−∞","+∞","0"],["~B","−∞","−∞","+∞","+f3"]])}</li>
+<li><b>Mixed strategies / invalidity (L3; Hájek §3).</b> Grant every premise. The coin-flip strategy gets EV = ½(∞) + ½(finite) = ∞. So does any act with any positive probability of ending up wagering for God, which (Hájek argues) is every act. Belief is not uniquely best, so the conclusion does not follow: the argument is <i>invalid</i>, not just unsound.</li>
+<li><b>Reply: tie-breaker (Hájek §3.3, Schlesinger).</b> Add "maximize the probability of salvation." Hájek: that's a different argument; Pascal's as stated is still invalid.</li>
+<li><b>Reply: reformulate (Hájek §4.2, vector-valued value).</b> Give outcomes a pair (earthly value, heavenly value), with salvation = 1 unit of heavenly value, and rank lexicographically: any gain in heavenly expectation beats any earthly gain. Wagering for God has heavenly expectation p; a mixed strategy with probability q of wagering has q·p &lt; p. Now belief uniquely wins, while infinity is replaced with something finite.</li>
+<li><b>Premise attacks (Hájek §2):</b> an atheist may give P(God) = 0; infinite utility may be incoherent; God may not reward mercenary believers (James); maximizing EV is questionable (St. Petersburg, infinite variance).</li></ol></div>
+<div class="sec"><h3>Common mistakes</h3><ul>
+<li>Stating dominance without "and better in at least one state."</li>
+<li>Thinking a 1% chance of God gives a smaller EV than a 50% chance. With ∞ they are equal; that's the point and the problem.</li>
+<li>Saying the mixed strategy has lower EV. It doesn't. That's exactly why it breaks the argument.</li>
+<li>In the Many Gods table, forgetting ~B gets +∞ under G3 (everyone saved).</li></ul></div>
+<div class="sec"><h3>Worked example (slides L1, 14–15)</h3>
+${dtable(["Heads (.5)","Tails (.5)"],[["A1: write 'heads'","+$10","−$10"],["A2: write 'tails'","−$7","+$5"]])}
+<ol class="steps"><li>Neither act dominates (each is better in one state), so use EV.</li><li>EV[A1] = .5(10) + .5(−10) = 0</li><li>EV[A2] = .5(−7) + .5(5) = −1</li><li>Maximize EV → choose A1.</li></ol></div>`},
+
+ev:{title:"Expected value & utility scales", topic:"ev", src:"Cumulative · slides L1–L5 · HW1–HW4 + keys", html:`
+<div class="sec"><h3>Key terms</h3><dl>
+<dt>Utility</dt><dd>The philosophical term for the value of an outcome. Slide L4 gives three theories: experience-based (experience machine), objective list, preference-based (advertising worry).</dd>
+<dt>Stated preference</dt><dd>What someone says they'd choose. Indifference means equal expected utility; preference means greater.</dd>
+<dt>Scale</dt><dd>You may fix two utilities (usually best = 1, worst = 0) and derive the rest. Many correct scales exist (HW2 key 3c).</dd></dl></div>
+<div class="sec"><h3>Method</h3><ol>
+<li>List each act's outcomes and their probabilities (they sum to 1).</li>
+<li>Expected value: multiply and add. Compare acts.</li>
+<li>Utility from indifference: write EU[sure thing] = EU[gamble] and solve for the unknown.</li>
+<li>Threshold questions ("how high would p need to be?"): write EU[gamble] ≥ EU[sure thing] with p unknown and solve.</li></ol></div>
+<div class="sec"><h3>Common mistakes</h3><ul>
+<li>Forgetting the cost is lost in the winning state too (raffle: win P − c, lose −c).</li>
+<li>Insurance: buying = −cost for sure. Declining = expected loss. Compare those two, not the item values.</li>
+<li>Mixing up which outcome is the sure thing in an indifference.</li>
+<li>Using EV on money when the question is about utility.</li></ul></div>
+<div class="sec"><h3>Worked example (slide L5: Sarah)</h3>
+<p>Sarah is indifferent between $5 for sure and a 40% chance at $20 (60% nothing).</p>
+<ol class="steps"><li>Fix U($20) = 1, U($0) = 0.</li><li>Indifferent → U($5) = .4·U($20) + .6·U($0) = .4</li><li>Lottery (3): .8 chance $5, .2 chance $20 → .8(.4) + .2(1) = .52</li><li>Lottery (4): .4 chance $20, .5 chance $5, .1 chance $0 → .4(1) + .5(.4) + .1(0) = .60</li><li>(4) has higher expected utility for Sarah.</li></ol></div>
+<div class="sec callout"><b>HW4 key correction.</b> Q3a weight-2 struggling artist: .1(6) + .3(8) + .6(4) = <b>5.4</b> (key says 5.2). Q3d: EU<sub>w1</sub> = .9(6.6) + .1(18.4) = <b>7.78</b>; EU<sub>w2</sub> = .9(5.4) + .1(17.8) = <b>6.64</b> (key says 8.44 and 6.98). Recomputed by script.</div>`},
+
+moral:{title:"Moral uncertainty (Oddie)", topic:"moral", src:"8.31–9.04 · slides L4–L6 · Oddie 1994 (scanned PDF, unreadable here: this sheet is from the slides)", html:`
+<div class="sec"><h3>Key terms</h3><dl>
+<dt>Empirical vs moral uncertainty</dt><dd>Uncertainty about what will happen vs uncertainty about how good or bad the outcomes are morally (slide L5: the sick dog with human-like vs chicken-like moral worth).</dd>
+<dt>p</dt><dd>Your probability that embryos have the moral status of adult humans.</dd>
+<dt>g</dt><dd>The good from experimenting (the cures developed).</dd>
+<dt>l</dt><dd>The disvalue of experimenting on non-consenting adult humans (e.g. Mengele's experiments).</dd></dl></div>
+<div class="sec"><h3>The argument (slides L5–L6)</h3>
+${dtable(["Embryos have adult moral status (p)","No moral status (1−p)"],[["Experiment","g − l","g"],["Don't experiment","0","0"]])}
+<div class="formula">E[Experiment] = p(g − l) + (1−p)g = g − p·l        E[Not] = 0
+Experiment just in case  g ≥ p·l</div>
+<div class="prem">(1) When facing uncertainty, maximize expected value.<br>(2) Moral uncertainty is like any other.<br>(3) The likelihood that embryos have moral status is a reasonable amount (e.g. 50%, 10%, 1%).<br>(4) The badness of experimenting on non-consenting adult humans is not comparable to the goods one might get from such experiments.<br>(C) So p·l &gt; g: experimenting on embryos is impermissible.</div>
+<p><b>Oddie's test case (L5 slide 17):</b> with p = .5, experiment iff 2g ≥ l. Assume a cure for AIDS is as good as a cure for leukemia, and both cures are twice as good as one. Would it be permissible to experiment on non-consenting adults to get both cures? If no, then l &gt; 2g, so it is not permissible to experiment on embryos for the leukemia cure.</p>
+<p><b>Simplifying assumptions (slide 18):</b> only two possibilities for moral status; research guaranteed to succeed; ignore monetary cost; the only badness is the experimentation. Claim: each of these is neutral or <i>helps</i> the defender of embryo experimentation, so dropping them only strengthens Oddie.</p></div>
+<div class="sec"><h3>Objections and replies</h3>
+<p class="small muted">The slides end with "Thoughts?" and don't list objections. These target specific premises; use them as structure, not as "what Peeters said."</p><ol>
+<li><b>Against (2):</b> moral uncertainty is not like empirical uncertainty; maybe you should act on the moral view you think is true, not hedge. Reply: in the dog case we do seem to weigh the possibility that killing is seriously wrong.</li>
+<li><b>Against (3):</b> p may be tiny. Reply: since l is so large, even p = .01 can make p·l exceed g. The argument only needs p not to be negligible relative to l/g.</li>
+<li><b>Against (4):</b> maybe enough cures <i>would</i> outweigh it. Reply: Oddie's test, where most people refuse to experiment on adults even for two cures.</li></ol></div>
+<div class="sec"><h3>Common mistakes</h3><ul><li>Writing E[Experiment] = p·g − l. Expand properly: p(g − l) + (1−p)g = g − p·l.</li><li>Forgetting that "Don't experiment" is 0 in both states.</li></ul></div>
+<div class="sec"><h3>Worked example</h3><p>p = .1, g = 50, l = 1000.</p>
+<ol class="steps"><li>E[Experiment] = g − p·l = 50 − .1(1000) = −50</li><li>E[Not] = 0 &gt; −50 → don't experiment.</li><li>Highest p at which experimenting is permissible: g/l = 50/1000 = .05</li></ol></div>`},
+
+qaly:{title:"QALY", topic:"qaly", src:"9.09–9.14 · slides L6–L8 · Singer, McKie, Kuhse & Richardson 1995", html:`
+<div class="sec"><h3>Key terms</h3><dl>
+<dt>QALY</dt><dd>Quality-adjusted life year. A year in full health = 1, death = 0, a year in a condition = its quality score.</dd>
+<dt>Standard gamble</dt><dd>Live with the condition vs a treatment with p chance of full cure and 1−p chance of painless death. The p at which you're indifferent is the condition's QALY score.</dd>
+<dt>Time trade-off</dt><dd>Live 10 years with the condition vs t years in full health. The indifference point gives score t/10.</dd>
+<dt>Interval scale</dt><dd>Differences must be meaningful (we compare gains), which is why personal rankings aren't enough (L8).</dd>
+<dt>Micro / macro, intra / inter-personal</dt><dd>Uses of QALY: which treatment is best for you; which medication to fund; who gets a scarce heart; which drugs for which diseases to fund (L8 slide 5).</dd>
+<dt>Double jeopardy</dt><dd>People with disabling conditions suffer the original tragedy, then a second one: their health care needs are weighed as less important (L8; Harris via Singer et al.).</dd></dl></div>
+<div class="sec"><h3>Method</h3><ol>
+<li>Get each condition's score (standard gamble or time trade-off).</li>
+<li>QALY gained per year = new score − old score.</li>
+<li>Over a lifetime: gain per year × years with the condition, plus any extra years × the score you live them at.</li>
+<li>Cost per QALY = cost ÷ QALY gained. For annual treatments use cost/year ÷ QALY gained/year.</li>
+<li>Prioritize the lowest cost per QALY.</li></ol></div>
+<div class="sec"><h3>Double jeopardy: objection and Singer et al.'s replies</h3><ol>
+<li><b>Amelioration cases don't produce it.</b> Karen (paraplegic, score .5 → .75 over 40 yrs: +10 QALY for $10,000 = $1,000/QALY) beats Lisa (limp, .95 → 1: +2 QALY = $5,000/QALY). QALYs track the <i>change</i>, not the level.</li>
+<li><b>Life-saving cases do produce it:</b> Michelle (score .5) gains 20 QALY from a $100,000 transplant ($5,000/QALY); Nina (.95) gains 38 ($2,632/QALY). But Otto and Richard (shorter vs longer life expectancy) give the same QALY verdict. Harris's view that only the person's desire to live matters would forbid preferring Richard even if Otto had a week to live.</li>
+<li><b>Compensatory justice (Kappel and Sandøe's life-time view)</b> says past suffering earns priority. Reply: that would treat someone now suffering less before someone now suffering more. Past suffering can't be reduced, so take the timeless view: reduce present and future suffering.</li>
+<li><b>Veil of ignorance:</b> rational egoists who don't know which patient they'll be would choose the method that favours the larger interest in continued life, i.e. QALY allocation. So double jeopardy is not a sign of injustice. (Harris's slavery and Rawls objections are answered in the paper.)</li>
+<li>Concession: overall utility (a more compassionate society) might still justify tilting toward the disadvantaged.</li></ol>
+<p><b>Adaptation worry (L8 slide 3):</b> people who live with a condition often rate it higher than people imagining it. Should QALY surveys use the general population or people with the condition?</p></div>
+<div class="sec"><h3>Common mistakes</h3><ul><li>Dividing cost by the condition's score instead of by the QALY <i>gained</i>.</li><li>Forgetting the extra years when a cure also extends life.</li><li>Ranking by highest $/QALY. Lower is better.</li></ul></div>
+<div class="sec"><h3>Worked example (slide L8)</h3>
+<p>#1 caps teeth: lasts 10 yrs, +.02 QALY/yr, $500. #2 emergency appendectomy: +50 yrs at average .9, $120,000.</p>
+<ol class="steps"><li>#1 gain = 10 × .02 = .2 QALY → $500/.2 = $2,500/QALY</li><li>#2 gain = 50 × .9 = 45 QALY → $120,000/45 = $2,666.67/QALY</li><li>QALY maximizing prioritizes capping teeth, narrowly. (A good discussion point.)</li></ol></div>`},
+
+te:{title:"Transformative experience", topic:"te", src:"9.16–9.18 · slides L9–L10 · Pettigrew 2015", html:`
+<div class="sec"><h3>Key terms</h3><dl>
+<dt>ETE</dt><dd>Epistemically transformative experience: teaches you what an experience is like, which you can only learn by having it (tasting durian or Vegemite).</dd>
+<dt>PTE</dt><dd>Personally transformative experience: changes what you value and how much (becoming a parent, the vampire).</dd>
+<dt>Paul's challenge</dt><dd>Decision theory needs step 2 (assign each outcome a utility). With an ETE or PTE you can't, so you can't decide rationally.</dd>
+<dt>Redescription strategy</dt><dd>Pettigrew: fine-grain the states to include hypotheses about what your utility function is, then have credences over them.</dd>
+<dt>Local / global utility</dt><dd>Local utility = how much you value an outcome at a given time. Global utility = a weighted sum of local utilities across past, present and future.</dd>
+<dt>Authenticity</dt><dd>Choosing from your own first-person point of view (Paul). Deferring to others' preferences is the hallmark of inauthentic choice.</dd></dl></div>
+<div class="sec"><h3>The problem (slide L10)</h3>
+<div class="prem">Step 1: consider each outcome and how likely it is given the action.<br>Step 2: assign each outcome a utility.<br>Step 3: combine into expected utility.<br>ETE: you don't know what the outcome will be like → can't do step 2.<br>PTE: your values will change → which utilities count in step 2?</div>
+<p>Slide L9's child-or-not table: the "Have child" row is all ??, so you can't compute EU.</p></div>
+<div class="sec"><h3>Pettigrew's responses, with objections</h3><ol>
+<li><b>ETE response:</b> uncertainty about your utilities is just more uncertainty, and that's the whole point of decision theory. Use data (slide: 87% of people who didn't grow up eating durian find it disgusting, 10% inoffensive, 3% delicious) as credences over what durian will be like for you, then build the table.</li>
+<li><b>Paul's objection, inauthenticity:</b> you're deciding on the basis of other people's preferences.</li>
+<li><b>Pettigrew's reply:</b> you use others' reports as <i>evidence about your own</i> utility function, not as values to defer to. If you learned the survey group was unlike you in every other way, you'd drop their numbers. Deferring to morality or a group means using their utility function; this uses your own, just uncertainly.</li>
+<li><b>PTE response:</b> map out local utilities at each time, then combine them with weights (summing to 1) into a global utility. That solves the formal problem.</li>
+<li><b>The remaining question is which weights.</b> All on present? All on future? Any on the past? If you weight future selves by how similar they are to your present self, you get conservatism and chauvinism about current values (you'd never adopt because your parent-self is unlike you). Second-order utilities don't help, since they change too.</li></ol></div>
+<div class="sec"><h3>Common mistakes</h3><ul><li>Mixing up ETE and PTE: ETE is about <i>knowing</i> what it's like, PTE is about <i>values changing</i>.</li><li>Weights that don't sum to 1.</li><li>Using the future utility of the outcome you <i>didn't</i> choose: each outcome has its own future utility.</li></ul></div>
+<div class="sec"><h3>Worked example (HW4 Q3, corrected)</h3>
+<p>Weights .1 past / .6 present / .3 future. Struggling artist: past 6, present 8, future 4. Orchestra teacher: 4, 4, 16. Making it big: 10, 20, 18. Performance career = .9 struggling, .1 big.</p>
+<ol class="steps"><li>GU(artist) = .1(6) + .6(8) + .3(4) = 6.6</li><li>GU(teacher) = .1(4) + .6(4) + .3(16) = 7.6</li><li>GU(big) = .1(10) + .6(20) + .3(18) = 18.4</li><li>EU(performance) = .9(6.6) + .1(18.4) = 7.78 &gt; 7.6 → pursue performance on these weights.</li><li>With weights .1/.3/.6: 5.4, 11.2, 17.8; EU(performance) = 6.64 &lt; 11.2 → become the teacher. The weights decide it.</li></ol></div>`},
+
+collective:{title:"Collective action (Kagan)", topic:"collective", src:"9.22–9.25 · slides L11–L13 · Kagan 2011", html:`
+<div class="sec"><h3>Key terms</h3><dl>
+<dt>Inefficacy / causal impotence</dt><dd>My buying or not buying makes no difference to production.</dd>
+<dt>Threshold (triggering) case</dt><dd>Most acts make no difference, but one act tips a threshold and makes a big difference.</dd>
+<dt>Imperceptible-difference case</dt><dd>Every act makes a difference too small to perceive.</dd>
+<dt>Perfect replacement model</dt><dd>The store orders exactly as many chickens as were sold each day.</dd>
+<dt>Batch replacement model</dt><dd>The store orders in batches (100 on Sunday, another 50 only if 50 or fewer are left Thursday).</dd>
+<dt>Cohort</dt><dd>Everyone who buys in a period. Kagan: what matters is whether the cohort's size hits a multiple of T, not your place in line.</dd></dl></div>
+<div class="sec"><h3>The problem (slide L12)</h3>
+<div class="prem">(1) Some practice done by many people has net negative utility (factory farming).<br>(2) So we condemn the practice on consequentialist grounds.<br>(3) But a single individual's action makes no difference to the extent of the practice.<br>(C) So it seems impossible to condemn the individual's action on consequentialist grounds.</div>
+<p>Background assumptions (L11): non-human animal suffering matters; benefits are roughly replaceable; eliminating factory farming would be a net positive.</p></div>
+<div class="sec"><h3>Kagan's solution</h3><ol>
+<li>The batch model is roughly right except in two ways (L12): (a) the size of the cohort vs the last individual; (b) lack of knowledge.</li>
+<li>If you <i>know</i> your act won't hit a threshold, there's no consequentialist reason against it. But usually you don't know (L13).</li>
+<li>So it's decision under uncertainty. A 1/T chance of triggering an order of T more chickens = an expected one chicken's worth of suffering, which outweighs the small pleasure.</li>
+<li>General version (L13): B &gt; n·g; if triggered, effect = T·B/n; Pr = 1/T; so EU = g − B/n &lt; 0. The bigger the threshold, the less likely you trigger it, but the effect grows by the same factor.</li>
+<li>Kagan also argues imperceptible-difference cases (for felt harms) can't really exist, so all collective action cases are triggering cases.</li></ol></div>
+<div class="sec"><h3>Objections and replies</h3><ol>
+<li><b>"Friends of Chicken Consumption":</b> what if someone tells you exactly how many will buy today, so you know you won't trigger? Kagan: then consequentialism doesn't condemn your purchase. But normally that call never comes.</li>
+<li><b>Real supply chains are insensitive</b> (waste, many layers). Reply: as long as there is <i>some</i> T and orders track demand, the 1/T × T structure holds.</li></ol></div>
+<div class="sec"><h3>Common mistakes</h3><ul><li>Saying Kagan thinks every purchase makes a difference. He says most don't; expected disutility is what condemns them.</li><li>Forgetting the knowledge condition.</li></ul></div>
+<div class="sec"><h3>Worked example (slide L12 numbers)</h3><p>Chicken life disutility −10, marginal gain of buying +1, T = 25.</p>
+<ol class="steps"><li>Pr(you're in a triggering cohort) = 1/25</li><li>If so, 25 more chickens suffer: 25 × (−10) = −250</li><li>EU(buy) = (1/25)(−250) + 1 = −10 + 1 = −9 &lt; 0 → don't buy.</li></ol></div>`},
+
+harms:{title:"Adding harms (Norcross)", topic:"harms", src:"9.30–10.02 · slides L14–L15 · Norcross 1998", html:`
+<div class="sec"><h3>Key terms</h3><dl>
+<dt>Position 1 (standard consequentialism)</dt><dd>Small harms aggregate: some number of minimal harms is as bad as one tragic harm.</dd>
+<dt>Position 2 / "Worse"</dt><dd>Other things equal, it's worse that one person dies than that any number of people suffer moderate headaches.</dd>
+<dt>Death</dt><dd>Other things equal, it's better that one person die than that five die (Gas 1).</dd>
+<dt>Risk</dt><dd>Other things equal, it's better that one person die than that five million each incur a one-in-a-million risk of dying (Gas 3/4).</dd>
+<dt>Headache</dt><dd>It's better that someone incur a one-in-a-million risk of death than suffer a moderate 24-hour headache (driving to the pharmacy).</dd>
+<dt>Many Headaches</dt><dd>It's better that five million people each incur a one-in-a-million risk of dying than that they each suffer a headache.</dd></dl></div>
+<div class="sec"><h3>The argument (slide L15)</h3>
+<div class="prem">(Risk) A single individual suffering a tragic harm is better than a large enough number of individuals each suffering a very small chance of a tragic harm.<br>(Convenience) A single individual suffering a very small chance of a tragic harm is better than that individual suffering a minimal harm.<br>(Multiplication) If Convenience is true, then a large enough number of individuals each suffering a very small chance of a tragic harm is better than that many people each suffering a minimal harm.<br>(C) Standard consequentialism: one person suffering a tragic harm is better than a large enough number of people each suffering a minimal harm.</div>
+<p>Many Headaches from Headache (paper): world W (all 5 million stay home) &lt; W1 (one goes) &lt; W2 &lt; … &lt; W5,000,000. By transitivity of "better than," W5,000,000 beats W.</p>
+<p><b>Norcross's four options:</b> deny Worse (his choice; also supported by speed-limit cases), deny Risk, deny Headache / Many Headaches, or deny transitivity. Each alternative is worse.</p></div>
+<div class="sec"><h3>Objections and replies</h3><ol>
+<li><b>Risk is false (L15):</b> with 5 million people at 1-in-a-million risk there's a chance no one dies. Reply: that chance is under 1% (≈ .0067) and there's a fair chance more than five die. Denying Risk means preferring an overwhelming likelihood of many deaths over one certain death just because there's a tiny chance nobody dies. And intuitions about Agnes don't change if she had a 1-in-a-million chance of recovering anyway.</li>
+<li><b>Deny Headache:</b> then nearly everyone in the industrialized world is massively irrational (driving to the cinema, the pharmacy).</li>
+<li><b>Deny transitivity:</b> discussed in the literature (Temkin, Quinn, Rachels) but "overwhelmingly implausible."</li></ol>
+<p>Closing point: philosophers who accept Worse still take small risks of great harms for small benefits, so their behaviour reveals they already deny Worse.</p></div>
+<div class="sec"><h3>Common mistakes</h3><ul><li>Saying Norcross argues headaches are as bad as death. He argues that <i>enough</i> of them outweigh one death.</li><li>Forgetting the role of transitivity.</li></ul></div>
+<div class="sec"><h3>Worked example (Gas 4)</h3><p>5,000,000 people each with a 1/1,000,000 chance of dying, independent.</p>
+<ol class="steps"><li>Expected deaths = 5,000,000 × 1/1,000,000 = 5</li><li>Pr(no one dies) = (1 − 1/1,000,000)^5,000,000 ≈ e^−5 ≈ .0067</li><li>So "a chance no one is harmed" is under 1%.</li></ol></div>`},
+
+prob:{title:"Probability rules", topic:"prob", src:"10.02–10.09 · slides L15–L17 · HW5 + key", html:`
+<div class="sec"><h3>Peeters' Basic Ideas (L15–L16)</h3><ol>
+<li>Pr(A) = # of A possibilities / # of total possibilities. <i>Note: each possibility must be equally likely.</i></li>
+<li>Pr(A or B) = Pr(A) + Pr(B). <i>Note: A and B must be exclusive.</i> General rule (L17): Pr(A or B) = Pr(A) + Pr(B) − Pr(A and B).</li>
+<li>Pr(A and B) = Pr(A)·Pr(B). <i>Note: A and B must be independent.</i> General rule (L17): Pr(A and B) = Pr(A)·Pr(B|A).</li>
+<li>Pr(Guaranteed) = 1.</li><li>Pr(Impossible) = 0.</li></ol>
+<p>Derived: Pr(at least one) = 1 − Pr(none), because "all H" and "at least one T" are negations, so exactly one occurs.</p></div>
+<div class="sec"><h3>Conditional probability (L16–L17)</h3>
+<div class="formula">Pr(A|B) = Pr(A and B) / Pr(B)
+Independent iff Pr(A|B) = Pr(A)  (equivalently Pr(A and B) = Pr(A)·Pr(B))</div></div>
+<div class="sec"><h3>Common mistakes</h3><ul>
+<li>Adding non-exclusive events (spade or face: 13 + 12 double-counts the 3 spade face cards → 22/52, not 25/52).</li>
+<li>Multiplying dependent events (draws without replacement, the Sally Clark SIDS deaths).</li>
+<li>"At least one in n tries" by adding: use 1 − Pr(none).</li>
+<li>Thinking a specific sequence (HHTHH) is less likely than HTHTH. Every specific sequence of 5 fair tosses is 1/32. There are just more sequences with 3 H than with 4 H.</li></ul></div>
+<div class="sec"><h3>Worked example (L15)</h3><p>A fair die tossed twice: probability it lands 3 at least once?</p>
+<ol class="steps"><li>Pr(no 3 on one toss) = 5/6</li><li>Independent → Pr(no 3 on both) = (5/6)² = 25/36</li><li>Pr(at least one 3) = 1 − 25/36 = 11/36 ≈ .306</li><li>Ten tosses: 1 − (5/6)^10 ≈ .838</li></ol></div>`},
+
+bayes:{title:"Hume, miracles & Bayes", topic:"bayes", src:"10.05–10.12 · slides L16–L19 · Dawid & Gillies 1989", html:`
+<div class="sec"><h3>Key terms</h3><dl>
+<dt>Miracle</dt><dd>Either an extraordinary occurrence with religious significance, or (Hume) "a transgression of a law of nature by a particular volition of the Deity."</dd>
+<dt>Prior Pr(T)</dt><dd>Probability of the theory before the evidence (relative to background knowledge K).</dd>
+<dt>Likelihood Pr(E|T)</dt><dd>How likely the evidence is if the theory is true.</dd>
+<dt>Posterior Pr(T|E)</dt><dd>Probability of the theory given the evidence. Bayes's theorem computes it.</dd>
+<dt>Prosecutor's fallacy</dt><dd>Treating Pr(evidence | innocent) as if it were Pr(innocent | evidence).</dd></dl></div>
+<div class="sec"><h3>Hume's argument (slides L16–L17)</h3>
+<div class="prem">(1) There are two causal mechanisms behind testimony of a miracle: a miracle occurred (M), or the witnesses lied, were mistaken, exaggerated… (not M).<br>(2) When two mechanisms could explain something, believe the more likely one: believe M only if Pr(M) &gt; Pr(not M).<br>(3) Pr(not M) &gt; Pr(M) always: lying and error happen all the time; a miracle goes against all our evidence.<br>(C) It is basically never reasonable to believe a miracle occurred on the basis of testimony.</div>
+<p>Hume's own words: no testimony suffices "unless the testimony be of such a kind, that its falsehood would be more miraculous, than the fact which it endeavours to establish."</p></div>
+<div class="sec"><h3>Objection and the Bayesian fix</h3><ol>
+<li><b>Lottery objection (slide; Price):</b> Pr(typo in the paper) &gt; Pr(those were the winning numbers, 1 in 300 million), so Hume's rule says never believe a lottery report. That's clearly wrong, so Hume's analysis isn't fully correct.</li>
+<li><b>Fix:</b> compare posteriors given the testimony, not priors. Use Bayes's theorem.</li>
+<li><b>Dawid &amp; Gillies, lottery:</b> p = 10⁻⁶, Pr(a|A) = .8, and Pr(a|not A) is also tiny, since the paper would have to print <i>this particular</i> wrong number: .2 × 10⁻⁶ / (1 − 10⁻⁶). The two tiny numbers cancel → Pr(A|a) = .8.</li>
+<li><b>Dawid &amp; Gillies, miracle:</b> p = 10⁻⁶, very reliable witnesses Pr(a|A) = .99, but Pr(a|not A) can't reasonably be below 10⁻³ (fraud, magicians, hallucination). Nothing cancels the tiny prior → Pr(A|a) ≈ 10⁻³. Hume is vindicated.</li>
+<li><b>But it depends on background knowledge K:</b> with religious background K′ making p = 10⁻³, the same testimony gives ≈ .5. So testimony can't convert a strict empiricist, but might rationally move someone with a religious worldview (Swinburne, Owen).</li></ol></div>
+<div class="sec"><h3>Sally Clark (L18–L19)</h3><ol>
+<li>Issue 1: (1/8543)² assumes SIDS deaths are independent. A genetic component makes a second death more likely given a first.</li>
+<li>Issue 2 (more important): 1 in 73 million is Pr(2 SIDS deaths), not Pr(innocent | 2 deaths). You must compare it with how rare double murders by mothers are (about 30 of 650,000 children in England and Wales killed by mothers). That's the prosecutor's fallacy.</li></ol></div>
+<div class="sec"><h3>Common mistakes</h3><ul><li>Confusing Pr(E|T) with Pr(T|E).</li><li>Leaving out the "not T" branch from the denominator.</li><li>Ignoring the base rate (the 1% / 6% / .1%).</li></ul></div>
+<div class="sec"><h3>Worked example (L19 breathalyzer)</h3><p>.1% of drivers are drunk; the breathalyzer always flags drunk drivers and wrongly flags 5% of sober ones. A random driver is flagged. Pr(drunk)?</p>
+<ol class="steps"><li>T = drunk, E = flagged. Pr(T) = .001, Pr(not T) = .999</li><li>Pr(E|T) = 1, Pr(E|not T) = .05</li><li>Top: 1 × .001 = .001</li><li>Bottom: .001 + .05 × .999 = .001 + .04995 = .05095</li><li>Pr(T|E) = .001/.05095 ≈ .0196 (under 2%)</li></ol></div>`},
+
+doomsday:{title:"Doomsday (Leslie)", topic:"doomsday", src:"10.14–10.16 · Leslie 1996, The End of the World ch. 5, pp. 187–205 · no slides posted yet", html:`
+<div class="sec"><h3>Key terms</h3><dl>
+<dt>Anthropic principle (Carter)</dt><dd>"What we can expect to observe must be restricted by the conditions necessary for our presence as observers."</dd>
+<dt>Observational selection</dt><dd>Observers should expect to find themselves where most observers are (Little Puddle vs London).</dd>
+<dt>Doom Soon / Doom Delayed</dt><dd>The two-bin simplification: the human race ends by ~2150, or survives for a few thousand centuries at present population or larger.</dd>
+<dt>Bayesian shift</dt><dd>Updating a prior risk estimate using your observed position in time.</dd>
+<dt>God's-eye view</dt><dd>Reasoning from facts you don't have ("somebody has to win"). Leslie says probabilities must be estimated from your own evidence.</dd></dl></div>
+<div class="sec"><h3>The argument</h3>
+<div class="prem">(1) Prefer theories that make your observations fairly expected over ones that make them extraordinary (the cat in the bedroom).<br>(2) If humanity lasts very long and grows, you are extraordinarily early among all humans (perhaps the earliest 0.01%). If it ends soon, you are fairly ordinary: about 10% of all humans ever born are alive now.<br>(3) Your birth rank is relevantly like your name being drawn early from an urn of unknown size.<br>(C) Bayes's rule shifts probability toward Doom Soon: the risk of early extinction is higher than you estimated from other evidence.</div>
+<p><b>Leslie's numbers:</b> urn with 10 names (prior 2%) or 1,000 (98%); your name is among the first 3 drawn → posterior ≈ 67%. Doom Soon prior 1%; Pr(being alive now) is 1/10 if soon, 1/1000 if delayed → posterior just over 50%. If delayed means galactic spread (1/1,000,000) → ≈ 99.9%.</p>
+<p><b>What it does not claim:</b> it doesn't say we are doomed. It magnifies risk estimates reached by other means (H-bombs, the ozone layer, physics experiments). "A Bayesian shift can magnify a risk-estimate only when something is already there to be magnified." It runs smoothly only if the world is deterministic, or its indeterminism has little effect on how long we last.</p></div>
+<div class="sec"><h3>Objections and Leslie's replies</h3><ol>
+<li><b>"Somebody has to be early"</b> (God's-eye view). Reply: the lottery winner can reasonably suspect few tickets were sold (the $300 book raffle). Every winner gains reason to think the urn was small, every loser that it was large. Refusing to update would mean learning nothing even after winning 30 times.</li>
+<li><b>The Roman objection:</b> a Roman using this argument would have wrongly predicted doom. Replies: (1) so what, since probabilistic arguments mislead someone improbably placed without being bad reasoning; (2) the race ending by 2150 <i>would</i> be fairly soon after Roman times; (3) no population explosion was under way then; (4) Romans may have had a tiny prior for extinction, unlike us.</li>
+<li><b>Two-bin approximation is crude.</b> Reply: approximations and ranges still produce big shifts. The real question is whether birth is analogous to being drawn from an urn.</li></ol></div>
+<div class="sec"><h3>Common mistakes</h3><ul><li>Saying Leslie predicts extinction. He argues for a <i>shift</i>.</li><li>Putting the 1/10 and 1/1000 in as priors. They are likelihoods: Pr(your position | hypothesis).</li></ul></div>
+<div class="sec"><h3>Worked example (Leslie pp. 199–200)</h3>
+<ol class="steps"><li>T = urn has 10 names. E = your name in the first 3 drawn.</li><li>Pr(T) = .02, Pr(not T) = .98; Pr(E|T) = 3/10, Pr(E|not T) = 3/1000</li><li>Top: .02 × .3 = .006</li><li>Bottom: .006 + .98 × .003 = .00894</li><li>Pr(T|E) = .006/.00894 ≈ .67</li></ol></div>`},
+};
+
+/* =========================================================
+   CALCULATION GENERATORS — each returns {topic,title,prompt,parts,steps}
+   parts: {label, answer, tol?, kind:'num'|'choice', options?}
+   ========================================================= */
+const GENS = {
+ev_raffle:{topic:"ev", name:"Raffle / drawing EV", gen(L){
+  const N=pick(L===1?[100,200,500]:[1000,2500,5000,10000]), c=pick([2,5,10,20]), P=pick([100,250,500,1000,2000]);
+  const ev=P/N-c;
+  return {prompt:`A fundraiser: the first ${N.toLocaleString()} people to donate $${c} go into a fair drawing for a single prize of $${P}. You know you'll be one of them. What is your expected monetary value of donating?`,
+    parts:[{label:"EV (in $)",answer:ev,tol:0.006}],
+    steps:[`Win: you gain $${P} − $${c} = $${P-c}, with Pr = 1/${N}`,`Lose: −$${c}, with Pr = ${N-1}/${N}`,`EV = (1/${N})(${P-c}) + (${N-1}/${N})(−${c}) = ${P}/${N} − ${c} = ${money(ev)}`]};
+}},
+ev_breakeven:{topic:"ev", name:"Break-even probability", gen(L){
+  const a=ri(2,L===1?10:40), b=ri(2,L===1?10:60); const p=b/(a+b);
+  return {prompt:`A gamble: you either win $${a} or lose $${b}. What would your chance of winning need to be for the gamble's expected value to be exactly $0?`,
+    parts:[{label:"Pr(win)",answer:p}],
+    steps:[`Let p = Pr(win). EV = p(${a}) + (1 − p)(−${b}) = 0`,`${a}p − ${b} + ${b}p = 0 → ${a+b}p = ${b}`,`p = ${b}/${a+b} = ${fp(p)}`]};
+}},
+ev_insurance:{topic:"ev", name:"Insurance (two items)", gen(L){
+  const k1=pick([3,4,5,6]), k2=pick([4,5,6,8,10]); const v1=k1*pick([10,20,30]), v2=k2*pick([30,50,80,100]);
+  const loss=v1/k1+v2/k2; const C=Math.max(10,Math.round((loss+pick([-30,-15,15,30]))/5)*5);
+  const buy = -C > -loss;
+  return {prompt:`You own a phone worth $${v1} and a laptop worth $${v2}. The probability you'll have to replace the phone is 1/${k1}; the laptop, 1/${k2} (independent). A policy costing $${C} covers replacing both.`,
+    parts:[{label:"EV of declining (in $)",answer:-loss,tol:0.006},{label:"EV-maximizing choice",kind:"choice",options:["Buy the insurance","Decline the insurance"],answer:buy?0:1}],
+    steps:[`EV[buy] = −$${C} (you pay for sure; any loss is covered)`,`EV[decline] = (1/${k1})(−${v1}) + (1/${k2})(−${v2}) = −${f(v1/k1)} − ${f(v2/k2)} = ${money(-loss)}`,`Independence only matters for joint events; expected losses just add.`,`${buy?"−"+C+" > "+money(-loss)+" → buy":money(-loss)+" ≥ −"+C+" → decline"}`]};
+}},
+ev_twoact:{topic:"ev", name:"Compare two acts", gen(L){
+  const s=pick([.1,.2,.25,.3,.4]); const a1=ri(4,12)*10, a2=-ri(1,8)*10, b1=ri(1,6)*10, b2=ri(1,6)*10;
+  const A=(1-s)*a1+s*a2, B=(1-s)*b1+s*b2;
+  return {prompt:`<p>A vendor decides what to stock for a fair. Pr(rain) = ${s}.</p>`+dtable([`No rain (${f(1-s)})`,`Rain (${s})`],[["A: ice cream",`$${a1}`,`${money(a2)}`],["B: umbrellas + drinks",`$${b1}`,`$${b2}`]])+`<p>Find each act's expected value.</p>`,
+    parts:[{label:"EV[A]",answer:A,tol:0.006},{label:"EV[B]",answer:B,tol:0.006},{label:"Rational choice (max EV)",kind:"choice",options:["A","B","Tie"],answer:Math.abs(A-B)<1e-9?2:(A>B?0:1)}],
+    steps:[`Check dominance first: A is better if no rain, B if rain → neither dominates.`,`EV[A] = ${f(1-s)}(${a1}) + ${s}(${a2}) = ${f(A)}`,`EV[B] = ${f(1-s)}(${b1}) + ${s}(${b2}) = ${f(B)}`,`Pick the higher EV.`]};
+}},
+util_indiff:{topic:"ev", name:"Utility from indifference", gen(L){
+  const names=pick([["UTM","Western","Queens","York"],["chocolate","vanilla","strawberry","mint"],["Google","Amazon","unemployed","a startup"]]);
+  const p=ri(3,8)/10; const uB=L===1?1:pick([.8,.9,1]), uW=L===1?0:pick([0,.2,.3,.5]);
+  const mid=p*uB+(1-p)*uW;
+  const parts=[{label:`U(${names[1]})`,answer:mid}]; const steps=[`Indifferent → U(${names[1]}) = EU[gamble]`,`= ${p}·U(${names[0]}) + ${f(1-p)}·U(${names[2]}) = ${p}(${uB}) + ${f(1-p)}(${uW}) = ${f(mid)}`];
+  let extra="";
+  if(L===3){const q=pick([.25,.5,.75,.6]); const y=q*mid+(1-q)*uW; extra=` She is also indifferent between ${names[3]} for sure and a gamble with ${q} chance of ${names[1]} and ${f(1-q)} chance of ${names[2]}.`;
+    parts.push({label:`U(${names[3]})`,answer:y}); steps.push(`U(${names[3]}) = ${q}·U(${names[1]}) + ${f(1-q)}·U(${names[2]}) = ${q}(${f(mid)}) + ${f(1-q)}(${uW}) = ${f(y)}`);}
+  return {prompt:`Her ranking: ${names[0]} (best) > ${names[1]} > ${names[2]} (worst). U(${names[0]}) = ${uB}, U(${names[2]}) = ${uW}. She is indifferent between ${names[1]} for sure and a gamble with ${p} chance of ${names[0]} and ${f(1-p)} chance of ${names[2]}.${extra}`,parts,steps};
+}},
+util_solve:{topic:"ev", name:"Solve for an unknown utility", gen(L){
+  const T=pick([200,250,300]), M=pick([40,50,60]), pa=pick([.1,.2,.3]), q1=+(pa+.1).toFixed(2), q3=pick([.1,.2]), q2=+(1-q1-q3).toFixed(2), Z=pick([-50,0]);
+  const EA=pa*T+(1-pa)*M; const X=(EA-q1*T-q3*Z)/q2;
+  const parts=[{label:"EU[School A]",answer:EA},{label:"U(government job)",answer:X,tol:0.02}];
+  const steps=[`EU[A] = ${pa}(${T}) + ${f(1-pa)}(${M}) = ${f(EA)}`,`Indifferent → EU[A] = EU[B]: ${f(EA)} = ${q1}(${T}) + ${q2}·U(gov) + ${q3}(${Z})`,`${f(EA)} − ${f(q1*T)} − ${f(q3*Z)} = ${q2}·U(gov) → U(gov) = ${f(EA-q1*T-q3*Z)}/${q2} = ${f(X,2)}`];
+  if(L===3){const th=(M-Z)/(T-Z); parts.push({label:"Minimum Pr(law school) to risk the summer program",answer:th}); steps.push(`Summer program: p·${T} + (1−p)(${Z}) ≥ ${M} → p ≥ (${M} − ${Z})/(${T} − ${Z}) = ${fp(th)}`);}
+  return {prompt:`Farad wants law school (utility ${T}). At School A, ${Math.round(pa*100)}% of students get into law school and the rest become teachers (utility ${M}). At School B, ${Math.round(q1*100)}% get into law school, ${Math.round(q2*100)}% work for the government, and ${Math.round(q3*100)}% are unemployed (utility ${Z}). He finds A and B equally good.${L===3?` Later he must choose between a sure teaching job (${M}) and a summer program that gets him into law school with probability p, else unemployment (${Z}).`:""}`,parts,steps};
+}},
+util_threshold:{topic:"ev", name:"Threshold probability", gen(L){
+  const s=pick([.4,.5,.6,50,60]), W=s<1?pick([.8,.9,1]):pick([200,250]), F=s<1?pick([0,.1]):pick([0,-50]);
+  const p=(s-F)/(W-F);
+  return {prompt:`Option 1 is a sure outcome with utility ${s}. Option 2 is a gamble: probability p of an outcome with utility ${W}, otherwise utility ${F}. How high must p be for Option 2 to be at least as good?`,
+    parts:[{label:"Minimum p",answer:p}],
+    steps:[`EU[gamble] ≥ EU[sure]: p(${W}) + (1−p)(${F}) ≥ ${s}`,`p(${W} − ${F}) ≥ ${s} − ${F}`,`p ≥ ${f(s-F)}/${f(W-F)} = ${fp(p)}`]};
+}},
+dominance:{topic:"pascal", name:"Dominance check", gen(L){
+  const ns=L===1?2:3; const states=["S1","S2","S3"].slice(0,ns);
+  const A1=Array.from({length:ns},()=>ri(-5,10)); let A2; const mode=pick(["dom","dom","nodom","equal"]);
+  if(mode==="dom"){A2=A1.map(x=>x-pick([0,0,1,2,3])); if(A2.every((x,i)=>x===A1[i])) A2[0]-=2;}
+  else if(mode==="nodom"){A2=A1.map(x=>x-pick([1,2])); A2[ri(0,ns-1)]=A1[0]+pick([1,3]); if(A2.every((x,i)=>x<=A1[i])) A2[ns-1]=A1[ns-1]+2;}
+  else A2=A1.slice();
+  const dom=A1.every((x,i)=>x>=A2[i])&&A1.some((x,i)=>x>A2[i]); const eq=A1.every((x,i)=>x===A2[i]);
+  const ans=dom?0:(eq?2:1);
+  return {prompt:`<p>Does Act 1 dominate Act 2? (higher = better)</p>`+dtable(states,[["Act 1",...A1],["Act 2",...A2]]),
+    parts:[{label:"Verdict",kind:"choice",options:["Yes: Act 1 dominates Act 2","No: Act 2 is better in at least one state","No: they're equal in every state"],answer:ans}],
+    steps:[`Dominance: at least as good in every state AND better in some state.`,`Compare column by column: ${states.map((s,i)=>`${s}: ${A1[i]} vs ${A2[i]}`).join("; ")}.`,dom?"Act 1 ≥ Act 2 everywhere and > somewhere → dominates.":eq?"Equal everywhere → no state where Act 1 is better → no dominance.":"Act 2 wins somewhere → no dominance."]};
+}},
+oddie:{topic:"moral", name:"Oddie's decision rule", gen(L){
+  const p=pick([.01,.05,.1,.2,.5]), l=pick([100,500,1000,2000,10000]), g=pick([5,10,20,50,100,300]);
+  const e=g-p*l; const parts=[{label:"E[Experiment]",answer:e,tol:0.01},{label:"Permissible to experiment?",kind:"choice",options:["Yes: g ≥ p·l","No: g < p·l"],answer:e>=0?0:1}];
+  const steps=[`E[Experiment] = p(g − l) + (1 − p)g = g − p·l = ${g} − ${p}(${l}) = ${f(e)}`,`E[Not] = 0 → experiment iff g ≥ p·l: ${g} ${e>=0?"≥":"<"} ${f(p*l)}`];
+  if(L>=2){parts.push({label:"Largest p at which experimenting is permissible",answer:Math.min(1,g/l)}); steps.push(`g ≥ p·l ⇔ p ≤ g/l = ${g}/${l} = ${fp(g/l)}`);}
+  return {prompt:`Oddie's table: embryos have adult moral status with probability p = ${p}. The good of the research g = ${g}; the disvalue of experimenting on non-consenting adult humans l = ${l}.`,parts,steps};
+}},
+qaly_scores:{topic:"qaly", name:"Standard gamble & TTO", gen(L){
+  const p=pick([.6,.65,.7,.75,.8,.85,.9,.95]); const t=ri(2,9);
+  const c1=pick(["chronic migraines","severe asthma","partial paralysis"]), c2=pick(["blindness","being bedridden","life in a wheelchair"]);
+  return {prompt:`Surveys: people are indifferent between living with ${c1} and a treatment with a ${p} chance of full cure and a ${f(1-p)} chance of painless death. They'd also trade 10 years with ${c2} for ${t} years in full health.`,
+    parts:[{label:`QALY score of ${c1}`,answer:p},{label:`QALY score of ${c2}`,answer:t/10}],
+    steps:[`Standard gamble: indifference at p cure → score = p = ${p}`,`Time trade-off: 10 yrs ≡ ${t} yrs full health → 10·U = ${t}·1 → U = ${t}/10 = ${f(t/10)}`]};
+}},
+qaly_annual:{topic:"qaly", name:"Cost per QALY (yearly drug)", gen(L){
+  const q1=pick([.95,.9,.8,.7]), q2=pick([.65,.6,.5,.4]); const c1=pick([1000,2000,5000]), c2=pick([12000,30000,50000]);
+  const r1=c1/(1-q1), r2=c2/(1-q2);
+  return {prompt:`Condition #1 has QALY score ${q1}; a yearly drug fully cures it for $${c1.toLocaleString()} per year. Condition #2 has score ${q2}; its yearly cure costs $${c2.toLocaleString()} per year.`,
+    parts:[{label:"Cost/QALY for #1 (in $)",answer:r1,tol:Math.max(1,r1*0.005)},{label:"Cost/QALY for #2 (in $)",answer:r2,tol:Math.max(1,r2*0.005)},{label:"QALY-maximizing priority",kind:"choice",options:["Cure #1","Cure #2"],answer:r1<=r2?0:1}],
+    steps:[`QALY gained/year: #1 = 1 − ${q1} = ${f(1-q1)}; #2 = 1 − ${q2} = ${f(1-q2)}`,`#1: $${c1}/yr ÷ ${f(1-q1)} QALY/yr = ${money(r1)}/QALY`,`#2: $${c2}/yr ÷ ${f(1-q2)} QALY/yr = ${money(r2)}/QALY`,`Prioritize the lower cost per QALY.`]};
+}},
+qaly_onetime:{topic:"qaly", name:"One-time cure with life extension", gen(L){
+  const q=pick([.4,.5,.6,.65,.8]), Lr=pick([10,20,30,40]), ext=L===1?0:pick([5,10,20]), C=pick([10000,50000,100000,900000]);
+  let gained, steps;
+  if(L<3){gained=Lr*(1-q)+ext; steps=[`Without cure: ${Lr} yrs at ${q}. With cure: ${Lr+ext} yrs at 1.`,`Gain = ${Lr} × (1 − ${q})${ext?` + ${ext} × 1`:""} = ${f(Lr*(1-q))}${ext?` + ${ext}`:""} = ${f(gained)} QALY`,`Cost/QALY = $${C.toLocaleString()} / ${f(gained)} = ${money(C/gained)}`];
+    return {prompt:`People with this condition (score ${q}) live ${Lr} more years on average. A one-time cure costing $${C.toLocaleString()} restores full health${ext?` and extends life to ${Lr+ext} years`:" without changing life expectancy"}.`,parts:[{label:"QALY gained",answer:gained},{label:"Cost per QALY (in $)",answer:C/gained,tol:Math.max(1,C/gained*0.005)}],steps};}
+  const q2=+(q+pick([.2,.3])).toFixed(2); const q2c=Math.min(q2,.95); gained=Lr*(q2c-q)+ext*q2c;
+  steps=[`Without: ${Lr} yrs at ${q}. With: ${Lr+ext} yrs at ${q2c}.`,`Gain = ${Lr}(${q2c} − ${q}) + ${ext}(${q2c}) = ${f(Lr*(q2c-q))} + ${f(ext*q2c)} = ${f(gained)} QALY`,`Cost/QALY = $${C.toLocaleString()} / ${f(gained)} = ${money(C/gained)}`];
+  return {prompt:`People with condition X (score ${q}) live ${Lr} more years. A one-time drug costing $${C.toLocaleString()} raises them to score ${q2c} and extends life to ${Lr+ext} years (partial cure, as in HW3 3d).`,parts:[{label:"QALY gained",answer:gained},{label:"Cost per QALY (in $)",answer:C/gained,tol:Math.max(1,C/gained*0.005)}],steps};
+}},
+qaly_maxtto:{topic:"qaly", name:"Maximum time trade-off (HW4 2c)", gen(L){
+  const B=pick([10000,15000,20000]), C=pick([30000,50000,60000]), Y=pick([30,40,60]);
+  const x=C/(Y*B); const tto=10*(1-x);
+  return {prompt:`The most efficient intervention so far costs $${B.toLocaleString()}/QALY. A new implant costs $${C.toLocaleString()} and restores hearing for ${Y} years. What QALY gain per year must it produce to be the most efficient, and what is the maximum time trade-off (years of full health for 10 years of deafness) that makes that true?`,
+    parts:[{label:"Minimum QALY gained per year",answer:x,tol:0.0006},{label:"Max TTO (years of full health)",answer:tto,tol:0.02}],
+    steps:[`Need $${C}/(${Y}·x) ≤ $${B} → x ≥ ${C}/(${Y}·${B}) = ${fp(x)}`,`Deafness score = 1 − x. TTO: 10·(1 − x) = ${f(tto,2)} years`,`More years traded → higher deafness score → smaller gain → less efficient.`]};
+}},
+te_global:{topic:"te", name:"Global utility (Pettigrew)", gen(L){
+  const W=pick([[.1,.6,.3],[.1,.3,.6],[.2,.5,.3],[0,.5,.5],[.2,.2,.6]]);
+  const a=[ri(4,8),ri(6,10),ri(2,6)], b=[ri(2,5),ri(2,5),ri(10,18)];
+  const g=v=>W[0]*v[0]+W[1]*v[1]+W[2]*v[2]; const GA=g(a), GB=g(b);
+  const parts=[{label:"Global utility: stay an artist",answer:GA},{label:"Global utility: become a teacher",answer:GB}];
+  const steps=[`GU = w_past·U_past + w_present·U_present + w_future·U_future`,`Artist: ${W[0]}(${a[0]}) + ${W[1]}(${a[1]}) + ${W[2]}(${a[2]}) = ${f(GA)}`,`Teacher: ${W[0]}(${b[0]}) + ${W[1]}(${b[1]}) + ${W[2]}(${b[2]}) = ${f(GB)}`];
+  let extra="";
+  if(L===3){const c=[ri(8,12),ri(16,22),ri(14,20)]; const GC=g(c); const pr=pick([.1,.2]); const EU=(1-pr)*GA+pr*GC;
+    extra=` Performing is risky: probability ${f(1-pr)} you stay a struggling artist, ${pr} you make it big (local utilities past ${c[0]}, present ${c[1]}, future ${c[2]}).`;
+    parts.push({label:"EU of pursuing performance",answer:EU}); steps.push(`GU(big) = ${W[0]}(${c[0]}) + ${W[1]}(${c[1]}) + ${W[2]}(${c[2]}) = ${f(GC)}`,`EU(perform) = ${f(1-pr)}(${f(GA)}) + ${pr}(${f(GC)}) = ${f(EU)}; compare with teacher ${f(GB)}`);}
+  return {prompt:`Weights: w_past = ${W[0]}, w_present = ${W[1]}, w_future = ${W[2]}. Struggling artist: past ${a[0]}, present ${a[1]}, future-if-chosen ${a[2]}. Contented teacher: past ${b[0]}, present ${b[1]}, future-if-chosen ${b[2]}.${extra}`,parts,steps};
+}},
+kagan:{topic:"collective", name:"Kagan's expected utility", gen(L){
+  const n=pick([1000,2000,5000]), g=pick([1,2,3]), mult=pick([2,3,5]); const B=n*g*mult; const T=pick([20,25,50,100]);
+  const eff=T*B/n, pr=1/T, EU=g-B/n;
+  return {prompt:`Slide L13 setup: n = ${n.toLocaleString()} individual acts, each giving its agent a good g = ${g}. Together they cause a bad effect B = ${B.toLocaleString()}. Effects come in thresholds of size T = ${T} acts.`,
+    parts:[{label:"Effect if your act triggers a threshold",answer:eff},{label:"Pr(your act triggers it)",answer:pr},{label:"EU of performing the act",answer:EU}],
+    steps:[`Check Claim1: B = ${B} > n·g = ${n*g} ✓`,`Effect if triggered = T·B/n = ${T}·${B}/${n} = ${f(eff)}`,`Pr = 1/T = ${fp(pr)}`,`EU = g − (1/T)(T·B/n) = g − B/n = ${g} − ${f(B/n)} = ${f(EU)} < 0`]};
+}},
+norcross:{topic:"harms", name:"Gas 4: risk spread over many", gen(L){
+  const k=pick([1,2,3,4,5,6]); const N=k*1e6; const M=1e6; const p0=Math.pow(1-1/M,N);
+  return {prompt:`Gas 4-style: ${N.toLocaleString()} people each face an independent 1-in-1,000,000 risk of death.`,
+    parts:[{label:"Expected number of deaths",answer:k},{label:"Pr(no one dies)",answer:p0,tol:p0*0.02}],
+    steps:[`Expected deaths = ${N.toLocaleString()} × 1/1,000,000 = ${k}`,`Pr(one person survives) = 1 − 1/1,000,000`,`Independent → Pr(all survive) = (1 − 10⁻⁶)^${N.toLocaleString()} ≈ e^−${k} ≈ ${fp(p0)}`,`So the "chance no one is harmed" objection to Risk rests on a ${(p0*100).toFixed(2)}% chance.`]};
+}},
+prob_atleast:{topic:"prob", name:"At least once", gen(L){
+  const ev=pick([{d:"a fair die lands 6",k:6},{d:"a drawn card (with replacement) is a heart",k:4},{d:"a fair coin lands heads",k:2},{d:"a fair die lands 1 or 2",k:3}]);
+  const n=L===1?ri(2,3):ri(4,10); const p=1-Math.pow(1-1/ev.k,n);
+  return {prompt:`Over ${n} independent tries, what is the probability that ${ev.d} at least once?`,parts:[{label:"Probability",answer:p}],
+    steps:[`Pr(not on one try) = 1 − 1/${ev.k} = ${ev.k-1}/${ev.k}`,`Pr(not on any of ${n}) = (${ev.k-1}/${ev.k})^${n} = ${fp(Math.pow(1-1/ev.k,n))}`,`Pr(at least once) = 1 − that = ${fp(p)}`]};
+}},
+prob_cards:{topic:"prob", name:"Or with overlap (cards)", gen(L){
+  const c=pick([
+    {q:"a spade or a face card (J, Q, K)",a:13,b:12,ab:3},{q:"a heart or an ace",a:13,b:4,ab:1},{q:"a face card or a ten",a:12,b:4,ab:0},
+    {q:"a red card or a king",a:26,b:4,ab:2},{q:"a club or a face card",a:13,b:12,ab:3},{q:"a black card or an ace",a:26,b:4,ab:2}]);
+  const n=c.a+c.b-c.ab; const parts=[{label:"Probability",answer:n/52}]; const steps=[`Pr(A) = ${c.a}/52, Pr(B) = ${c.b}/52, Pr(A and B) = ${c.ab}/52`,`Pr(A or B) = ${c.a}/52 + ${c.b}/52 − ${c.ab}/52 = ${n}/52 = ${fp(n/52)}`];
+  if(L===3){parts.push({label:`EV if you win $10 on ${c.q}`,answer:10*n/52,tol:0.006}); steps.push(`EV = $10 × ${n}/52 = ${money(10*n/52)}`);}
+  return {prompt:`One card from a well-shuffled 52-card deck. Probability it is ${c.q}?`,parts,steps};
+}},
+prob_seq:{topic:"prob", name:"Coins & independent people", gen(L){
+  if(Math.random()<.5){const n=pick([4,5,6]); const one=n/Math.pow(2,n);
+    return {prompt:`A fair coin is tossed ${n} times (independent). (a) Probability of all heads? (b) Probability of exactly one head?`,parts:[{label:"(a) all heads",answer:1/Math.pow(2,n)},{label:"(b) exactly one head",answer:one}],
+      steps:[`Every specific sequence has probability (1/2)^${n} = 1/${Math.pow(2,n)}`,`All heads is one sequence → 1/${Math.pow(2,n)} = ${fp(1/Math.pow(2,n))}`,`Exactly one head: the H can be in any of ${n} positions → ${n} sequences → ${n}/${Math.pow(2,n)} = ${fp(one)}`]};}
+  const r=pick([.08,.09,.1,.12]);
+  return {prompt:`${Math.round(r*100)}% of people are left-handed. Two people are picked at random (independent). (a) Both left-handed? (b) One of each?`,parts:[{label:"(a) both left",answer:r*r},{label:"(b) one of each",answer:2*r*(1-r)}],
+    steps:[`(a) Pr(L1 and L2) = ${r} × ${r} = ${fp(r*r)}`,`(b) Pr(L1 and R2) + Pr(R1 and L2) = ${r}(${f(1-r)}) + ${f(1-r)}(${r}) = ${fp(2*r*(1-r))}`,`Exclusive orders → add; independent people → multiply.`]};
+}},
+cond_prob:{topic:"prob", name:"Conditional probability & independence", gen(L){
+  const A=pick([.3,.4,.5,.6]), B=pick([.2,.4,.5]); const indep=Math.random()<.4; const AB=indep?+(A*B).toFixed(4):+(pick([.1,.15,.2]).toFixed(2));
+  const ab=Math.min(AB,A,B);
+  return {prompt:`Pr(A) = ${A}, Pr(B) = ${B}, Pr(A and B) = ${ab}.`,parts:[{label:"Pr(A|B)",answer:ab/B},{label:"Pr(B|A)",answer:ab/A},{label:"Are A and B independent?",kind:"choice",options:["Yes","No"],answer:Math.abs(ab-A*B)<1e-9?0:1}],
+    steps:[`Pr(A|B) = Pr(A and B)/Pr(B) = ${ab}/${B} = ${fp(ab/B)}`,`Pr(B|A) = ${ab}/${A} = ${fp(ab/A)}`,`Independent iff Pr(A and B) = Pr(A)·Pr(B) = ${f(A*B)} → ${Math.abs(ab-A*B)<1e-9?"equal → independent":"not equal → dependent"}`]};
+}},
+bayes_test:{topic:"bayes", name:"Bayes: screening test", gen(L){
+  const c=pick([{n:"a disease",b:[.01,.02,.05,.06]},{n:"being drunk (random stop)",b:[.001,.005,.01]},{n:"the email being spam",b:[.2,.3]}]);
+  const b=pick(c.b), s=pick([.8,.9,.95,1]), fpr=pick([.05,.096,.1,.3]);
+  const post=s*b/(s*b+fpr*(1-b));
+  return {prompt:`Base rate of ${c.n}: ${b}. The test is positive ${s*100}% of the time when the condition is present, and ${+(fpr*100).toFixed(1)}% of the time when it isn't. Someone tests positive. Probability the condition is present?`,
+    parts:[{label:"Pr(condition | positive)",answer:post}],
+    steps:[`T = condition, E = positive. Pr(T) = ${b}, Pr(not T) = ${f(1-b)}`,`Pr(E|T) = ${s}, Pr(E|not T) = ${fpr}`,`Top: ${s} × ${b} = ${fp(s*b)}`,`Bottom: ${fp(s*b)} + ${fpr} × ${f(1-b)} = ${fp(s*b+fpr*(1-b))}`,`Pr(T|E) = ${fp(post)}`]};
+}},
+bayes_urn:{topic:"bayes", name:"Bayes: Laplace's urns", gen(L){
+  const x=pick([3,3,2]), y=pick([1,0,2].filter(v=>v!==x));
+  const pB=.5*x/4+.5*y/4, pXB=(.5*x/4)/pB, pBB=.5*(x/4)**2+.5*(y/4)**2;
+  const parts=[{label:"Pr(black)",answer:pB},{label:"Pr(urn X | black)",answer:pXB}]; const steps=[`Pr(B) = Pr(X)Pr(B|X) + Pr(Y)Pr(B|Y) = .5(${x}/4) + .5(${y}/4) = ${fp(pB)}`,`Pr(X|B) = .5(${x}/4) / ${fp(pB)} = ${fp(pXB)}`];
+  if(L>=2){parts.push({label:"Pr(two blacks, with replacement, same urn)",answer:pBB}); steps.push(`Pr(BB) = .5(${x}/4)² + .5(${y}/4)² = ${fp(pBB)}`,`Not .5×.5-style: the two draws are dependent because they share an unknown urn.`);}
+  return {prompt:`A fair coin picks urn X (${x} black, ${4-x} white) or urn Y (${y} black, ${4-y} white). You draw one marble at random.${L>=2?" Then (separately) imagine drawing twice from the chosen urn, replacing the first marble.":""}`,parts,steps};
+}},
+hume:{topic:"bayes", name:"Hume: testimony (Dawid–Gillies)", gen(L){
+  if(L===3){const N=pick([1e4,1e5,1e6]), r=pick([.7,.8,.9]);
+    return {prompt:`Lottery with ${N.toLocaleString()} equally likely numbers. The paper prints the right number with probability ${r}; if wrong, any wrong number is equally likely. Pr(the printed number won | it was printed)?`,
+      parts:[{label:"Posterior",answer:r}],steps:[`p = 1/${N.toLocaleString()}; Pr(a|A) = ${r}`,`Pr(a|not A) = (1 − ${r}) × (1/${N.toLocaleString()}) / (1 − p) ≈ ${fp((1-r)/N)}`,`Top: ${r}p; bottom: ${r}p + (1 − ${r})p → posterior = ${r}`,`The tiny prior is cancelled by the tiny chance of printing that specific wrong number. That's why lottery reports are believable and miracles aren't.`]};}
+  const p=pick([1e-3,1e-4,1e-6,.01]), ra=pick([.9,.95,.99]), rn=pick([1e-3,1e-2,1e-4]);
+  const post=ra*p/(ra*p+rn*(1-p));
+  return {prompt:`A reported miracle has prior probability ${p} (relative to background knowledge). Pr(witnesses report it | it happened) = ${ra}; Pr(they report it | it didn't happen) = ${rn}. Probability it happened, given the report?`,
+    parts:[{label:"Pr(M | report)",answer:post,tol:Math.max(post*0.02,1e-6)}],
+    steps:[`Top: ${ra} × ${p} = ${fp(ra*p)}`,`Bottom: ${fp(ra*p)} + ${rn} × ${f(1-p,6)} = ${fp(ra*p+rn*(1-p))}`,`Pr(M|a) = ${fp(post)}`,post<.5?`Still below .5: Hume's verdict holds with these numbers.`:`Above .5: with this background knowledge the testimony suffices.`]};
+}},
+doom:{topic:"doomsday", name:"Doomsday: Bayesian shift", gen(L){
+  if(Math.random()<.4){const s=pick([.01,.02,.05]), m=10, Mx=pick([1000,10000]), k=3; const post=s*k/m/(s*k/m+(1-s)*k/Mx);
+    return {prompt:`Your name is in an urn holding either ${m} names (prior ${s}) or ${Mx.toLocaleString()} names (prior ${f(1-s)}). Your name is among the first ${k} drawn. Probability of the small urn?`,parts:[{label:"Pr(small urn | early draw)",answer:post}],
+      steps:[`Likelihoods: ${k}/${m} and ${k}/${Mx}`,`Top: ${s} × ${f(k/m)} = ${fp(s*k/m)}`,`Bottom: ${fp(s*k/m)} + ${f(1-s)} × ${fp(k/Mx)} = ${fp(s*k/m+(1-s)*k/Mx)}`,`Posterior ≈ ${fp(post)}`]};}
+  const s=pick([.01,.02,.05,.1]), a=pick([10,20]), b=pick([1000,10000,1e6]); const post=(s/a)/((s/a)+(1-s)/b);
+  return {prompt:`Prior for Doom Soon: ${s}. Pr(being born when you were | Doom Soon) = 1/${a}; Pr(that | Doom Delayed) = 1/${b.toLocaleString()}. Revised probability of Doom Soon?`,parts:[{label:"Pr(Doom Soon | your birth rank)",answer:post}],
+    steps:[`Top: ${s} × 1/${a} = ${fp(s/a)}`,`Bottom: ${fp(s/a)} + ${f(1-s)} × 1/${b.toLocaleString()} = ${fp(s/a+(1-s)/b)}`,`Posterior ≈ ${fp(post)}`,`A ${s} prior becomes ${fp(post)}: the "Bayesian shift." It magnifies an existing risk estimate; it doesn't create one.`]};
+}},
+};
+const GEN_IDS=Object.keys(GENS);
+
+/* =========================================================
+   CONCEPT QUESTIONS (multiple choice)
+   ========================================================= */
+const MCQ = [
+{t:"pascal",d:1,q:"Which is Peeters' definition of dominance?",o:["A1 dominates A2 iff A1 has the higher expected value","A1 dominates A2 iff in every state A1 is at least as good as A2, and in some state better","A1 dominates A2 iff A1 is better in most states","A1 dominates A2 iff A1's worst outcome beats A2's best"],a:1,e:"Slide L1: at least as good in every state AND better in some state. Expected value is the fallback when nothing dominates."},
+{t:"pascal",d:1,q:"What is the slide's objection to Pascal's dominance argument (#1)?",o:["P(God) might be zero","Pascal has the outcomes wrong: if there's no God, believing has a finite loss and not believing a finite gain","Infinite utility is incoherent","Many gods"],a:1,e:"Once the No-God column has −f1 vs +f2, belief is no longer at least as good in every state, so it doesn't dominate. That pushes Pascal to expected value."},
+{t:"pascal",d:2,q:"Given Pascal's table, what is the EV of 'flip a fair coin; believe iff heads'?",o:["Half of believing's EV","Finite","+∞, the same as believing","Undefined because of −∞"],a:2,e:"½(+∞) + ½(finite) = +∞. That's the mixed-strategy problem (L3, Hájek §3)."},
+{t:"pascal",d:2,q:"Hájek's main charge against the Wager is that it is…",o:["unsound because P(God) = 0","invalid: even granting all premises, the conclusion doesn't follow","valid but question-begging","refuted by the Many Gods objection"],a:1,e:"Hájek §3: grant every premise; mixed strategies (indeed any act) also get ∞, so maximizing EV doesn't single out belief."},
+{t:"pascal",d:3,q:"In Hájek's §4.2 vector-valued reformulation, a mixed strategy with probability q (<1) of wagering for God has heavenly expectation…",o:["p","q·p, which is less than p, so outright wagering wins","∞","0"],a:1,e:"Salvation = 1 unit of heavenly value; wagering for God gives p; the mixed strategy gives q·p < p; lexicographic ordering ranks heavenly first."},
+{t:"pascal",d:2,q:"In the Many Gods table (G1, G2, G3, ~G), why can't Pascal pick an act?",o:["Every act has the same finite EV","Each belief act gets −∞ under some god, so the EVs can't be ranked","Not believing dominates","G3 makes all acts equal"],a:1,e:"B[G1] has −∞ under G2 and B[G2] has −∞ under G1; ∞ − ∞ is undefined, so maximize-EV gives no verdict."},
+{t:"ev",d:1,q:"HW1 Q3: the expected monetary value of a gamble is one of its possible payoffs…",o:["Always","Sometimes","Never"],a:1,e:"Sometimes: for a 50/50 between $0 and $10 the EV is $5 (not a payoff); for a gamble with one sure outcome, or e.g. 1/3 each of 0, 5, 10, it is."},
+{t:"ev",d:1,q:"Someone is indifferent between X for sure and a gamble G. What does that tell you?",o:["U(X) > EU(G)","U(X) = EU(G)","U(X) < EU(G)","Nothing about utility"],a:1,e:"Exam 1 study guide: two choices equal → EU[C1] = EU[C2]."},
+{t:"ev",d:2,q:"Why may you set U(best) = 1 and U(worst) = 0 when building a utility scale?",o:["Because utilities are probabilities","Because the scale's zero point and unit are arbitrary; only the relative spacing matters","Because Peeters requires it","Because utilities can't be negative"],a:1,e:"Utility scales are interval scales: you can fix two points and derive the rest. HW2 3c: 'I can just set two of the utilities.'"},
+{t:"ev",d:2,q:"Which theory of utility does the 'advertising' example (L4) put pressure on?",o:["Experience-based","Objective list","Preference-based","Expected value"],a:2,e:"Slide L4: Type 3 preference-based theories, 'Consider: Advertising' (preferences can be manufactured)."},
+{t:"moral",d:1,q:"In Oddie's table, when is experimenting on embryos permissible?",o:["When p < .5","When g ≥ p·l","When g ≥ l","When l ≥ p·g"],a:1,e:"E[Experiment] = g − p·l and E[Not] = 0, so experiment just in case g ≥ p·l."},
+{t:"moral",d:2,q:"Oddie's simplifying assumptions (only two moral statuses, research guaranteed to succeed, ignore money, only badness is experimentation) are claimed to…",o:["favour the opponent of experimentation","be neutral or favour the supporter of embryo experimentation","make the argument invalid","only matter if p is large"],a:1,e:"Slide L5 slide 18: all are neutral or benefit the person supporting experimentation, so removing them only strengthens Oddie's conclusion."},
+{t:"moral",d:3,q:"Which premise does most of the work in getting p·l > g for any 'reasonable' p?",o:["Maximize expected value","Moral uncertainty is like any other","The badness l of experimenting on non-consenting adults is not comparable to the goods","Embryos have a 50% chance of moral status"],a:2,e:"If l is enormous relative to g, then even p = .01 makes p·l exceed g. That's why Oddie's AIDS/leukemia test case targets l."},
+{t:"qaly",d:1,q:"People are indifferent between living with a condition and a cure with a .7 chance of full health and .3 chance of death. QALY score?",o:[".3",".7","7","Can't tell"],a:1,e:"Standard gamble: the indifference probability of cure is the score."},
+{t:"qaly",d:1,q:"10 years bedridden ≡ 4 years full health. QALY score of being bedridden?",o:[".6",".4","2.5","4"],a:1,e:"Time trade-off: 10·U = 4 → U = .4 (HW4 Q2a)."},
+{t:"qaly",d:2,q:"Singer et al.'s Karen/Lisa example shows that…",o:["QALYs always disadvantage the disabled","QALY maximization tracks the change a treatment makes, not the patient's level, so it can favour the severely disabled","double jeopardy is unfair","QALYs ignore cost"],a:1,e:"Karen gains 10 QALY for $10,000 vs Lisa's 2, so Karen gets priority despite being worse off."},
+{t:"qaly",d:2,q:"Singer et al.'s main argument that double jeopardy is NOT unjust appeals to…",o:["compensatory justice","the veil of ignorance: rational egoists would choose QALY-based allocation","Harris's view of the value of life","survey data"],a:1,e:"Behind the veil, not knowing which patient you'll be, you'd prefer saving the person with the greater interest in continued life."},
+{t:"qaly",d:3,q:"What is the worry in L8's 'population-wide vs specialized surveys' discussion?",o:["Surveys cost too much","People living with a condition adapt and rate it higher than people imagining it, so whose scores count?","QALY isn't an interval scale","Surveys ignore cost"],a:1,e:"The counsellor with the same mobility issues says you'll adapt. Is that the same or different when setting QALY for the population?"},
+{t:"te",d:1,q:"Tasting durian for the first time is mainly a(n)…",o:["PTE","ETE","Neither","Double jeopardy case"],a:1,e:"Epistemically transformative: you learn what-durian-is-like-for-you only by tasting it."},
+{t:"te",d:2,q:"Paul's inauthenticity objection targets which move?",o:["Weighting future selves","Setting credences about your own utilities from statistics about other people","Using expected utility at all","Refusing to choose"],a:1,e:"L10 slide 5: you're deciding on the basis of other people's preferences, the hallmark of an inauthentic choice."},
+{t:"te",d:2,q:"Pettigrew's reply to the inauthenticity objection is that…",o:["authenticity doesn't matter","others' reports are evidence about your own utility function, not values you defer to","you should only use your present utilities","ETEs don't exist"],a:1,e:"If you learned the sample was unlike you, you'd drop their numbers. You're using your own utility function under uncertainty."},
+{t:"te",d:3,q:"Weighting each future self by its similarity to your present self leads to what problem (Pettigrew)?",o:["Weights don't sum to 1","Conservatism and chauvinism about current values","Infinite utilities","Double counting the past"],a:1,e:"You'd heavily discount your possible parent-self because it's unlike you now, so you'd never adopt. Second-order utilities change too."},
+{t:"collective",d:1,q:"Which model has the store order exactly as many chickens as were sold each day?",o:["Batch replacement","Perfect replacement","Threshold","Cohort"],a:1,e:"Perfect replacement model (L12). Batch replacement orders in lumps."},
+{t:"collective",d:2,q:"Kagan: what really matters for whether your purchase makes a difference?",o:["Whether you're the 25th buyer in line","Whether you're part of a cohort whose size hits a multiple of the threshold T","How much you paid","Whether you can perceive the difference"],a:1,e:"Every member of a cohort of exactly 25 (50, 75…) can say the result would have been better had they abstained; place in line doesn't matter."},
+{t:"collective",d:2,q:"Why does Kagan conclude a typical purchase has negative expected utility?",o:["Every purchase causes suffering","A 1/T chance of causing T chickens' suffering = an expected one chicken's suffering, which outweighs the small pleasure","Consequentialism is false","Factory farms are illegal"],a:1,e:"Lower chance of triggering, proportionally bigger effect: EU = g − B/n < 0 since B > n·g (L13)."},
+{t:"collective",d:3,q:"Kagan's verdict on imperceptible-difference cases (for felt harms like pain)?",o:["They're the main kind","They can't really exist, so all collective action cases are triggering cases","They make consequentialism fail","They are handled by the batch model"],a:1,e:"There can't be cases where each act makes no difference to what's felt yet enough acts together do."},
+{t:"harms",d:1,q:"Which thesis does Norcross argue we should give up?",o:["Risk","Headache","Worse: one death is worse than any number of headaches","Transitivity"],a:2,e:"Option 1 (his choice): deny Worse. The other options are less palatable."},
+{t:"harms",d:1,q:"Gas 4 (5 million people each at 1-in-a-million risk) is meant to support which principle?",o:["Death","Risk","Headache","Many Headaches"],a:1,e:"Risk: better that one person die than that five million each incur a one-in-a-million risk of dying."},
+{t:"harms",d:2,q:"How does Norcross get from Headache to Many Headaches?",o:["By averaging","By a chain W < W1 < W2 < … < W5,000,000 plus transitivity of 'better than'","By the veil of ignorance","By expected utility alone"],a:1,e:"Each step adds one person driving to the pharmacy (better by Headache); transitivity carries it through."},
+{t:"harms",d:2,q:"What does denying Headache commit you to, according to Norcross?",o:["Accepting Worse","Condemning most people in the industrialized world as massively irrational","Rejecting transitivity","Nothing"],a:1,e:"Driving to the pharmacy or the cinema involves similar small risks for comfort."},
+{t:"harms",d:3,q:"In Gas 4, roughly what is the probability that no one dies?",o:["About 50%","About 10%","Under 1% (≈ .0067)","Exactly 0"],a:2,e:"(1 − 10⁻⁶)^5,000,000 ≈ e⁻⁵ ≈ .0067. Norcross: 'a finite, but small (less than one percent), chance that no one will die.'"},
+{t:"prob",d:1,q:"Basic Idea #2, Pr(A or B) = Pr(A) + Pr(B), requires that A and B are…",o:["independent","exclusive","equally likely","conditional"],a:1,e:"Slide L15 note. For overlapping events subtract Pr(A and B)."},
+{t:"prob",d:1,q:"Pr(A and B) = Pr(A)·Pr(B) requires that A and B are…",o:["exclusive","independent","exhaustive","equally likely"],a:1,e:"Slide L15 note. In general Pr(A and B) = Pr(A)·Pr(B|A)."},
+{t:"prob",d:2,q:"Five fair tosses: which is more likely, HHTHH or HTHTH?",o:["HHTHH","HTHTH","Equally likely, 1/32 each"],a:2,e:"Every specific sequence is (½)⁵ = 1/32 (HW5 1c). But 'three H' as an event is more likely than 'four H': 10 sequences vs 5."},
+{t:"bayes",d:1,q:"The prosecutor's fallacy confuses…",o:["Pr(A) with Pr(B)","Pr(evidence | innocent) with Pr(innocent | evidence)","independence with exclusivity","priors with utilities"],a:1,e:"1 in 73 million is Pr(2 SIDS deaths), not Pr(innocent | 2 deaths) (L18–19)."},
+{t:"bayes",d:2,q:"Slide interpretation of Hume: believe a miracle occurred iff…",o:["Pr(M | testimony) > .5","Pr(M) > Pr(not M)","the witnesses are reliable","it's religiously significant"],a:1,e:"Compare the two causal mechanisms' probabilities. Since Pr(not M) > Pr(M) always, never believe. The lottery case shows this rule is too strong."},
+{t:"bayes",d:2,q:"Per Dawid & Gillies, why is a reliable lottery report believable but a miracle report isn't?",o:["Lotteries are more common","In the lottery, Pr(report | not A) is also tiny (it must be that specific wrong number), so it cancels the tiny prior; nothing cancels the miracle's prior","Newspapers are more reliable than witnesses","Miracles have probability zero"],a:1,e:"Lottery posterior = .8; miracle posterior ≈ 10⁻³ even with Pr(a|A) = .99."},
+{t:"bayes",d:3,q:"Dawid & Gillies' final assessment of Hume:",o:["Hume is simply right","Hume is simply wrong","It depends on background knowledge K: with only scientific K Hume is right; with religious K′ (prior ~10⁻³) good testimony can make a miracle ~.5 probable","Testimony is irrelevant"],a:2,e:"Hume's argument might be circumvented by someone who allows religious knowledge distinct from scientific knowledge."},
+{t:"bayes",d:2,q:"Sally Clark 'Issue 1' (L18): squaring 1/8543 assumes…",o:["SIDS is common","SIDS deaths in a family are independent, but a genetic component makes a second more likely given a first","the mother is guilty","exclusivity"],a:1,e:"Multiplying requires independence. Issue 2 (more important) is the prosecutor's fallacy."},
+{t:"doomsday",d:1,q:"Leslie says the doomsday argument…",o:["proves humanity will end by 2150","produces a Bayesian shift that magnifies risk estimates reached by other means","shows the risk is low","only works for Romans"],a:1,e:"'A Bayesian shift can magnify a risk-estimate only when something is already there to be magnified.'"},
+{t:"doomsday",d:2,q:"In the doomsday calculation, 1/10 and 1/1000 are…",o:["priors","likelihoods: Pr(your temporal position | Doom Soon / Doom Delayed)","posteriors","utilities"],a:1,e:"Roughly 10% of all humans ever born are alive now if doom is soon; you'd be very exceptionally early otherwise."},
+{t:"doomsday",d:2,q:"Little Puddle (50 people) vs London (10 million), with amnesia: Leslie says…",o:["50/50","bet on London: if everyone bet Little Puddle there'd be 10 million losers","bet Little Puddle","you can't know"],a:1,e:"Observers should expect to find themselves where most observers are."},
+{t:"doomsday",d:3,q:"Which is NOT one of Leslie's replies to the Roman objection?",o:["So what: probabilistic arguments can mislead the improbably placed","Doom by 2150 would be fairly soon after Roman times","No population explosion was under way then","The Romans were in fact doomed by 2150"],a:3,e:"His four replies: so what; ending by 2150 would be fairly soon; no population explosion; Romans may have had a tiny prior."},
+{t:"doomsday",d:3,q:"Under what condition does Leslie say the argument runs smoothly?",o:["Only if the universe is infinite","If the world is deterministic, or its indeterminism has little influence on how long humanity lasts","Only with exact population figures","Only if P(doom) > .5 already"],a:1,e:"Radical indeterminism affecting survival weakens the grounds, though they 'may still be worrying.'"},
+];
+
+/* =========================================================
+   SHORT-ANSWER BANK (Argument Lab + mock exam)
+   ========================================================= */
+const SA = [
+{id:"sa_pascal_pc",t:"pascal",type:"pc",q:"State Pascal's expected-value argument in premise–conclusion form.",
+ model:"Claim1: P(God) > 0.\nClaim2: EV[Believing] > EV[Not Believing], because EV[Believing] = p(God)(+∞) + p(No God)(−f1) = +∞, while EV[Not believing] = p(God)(−∞) + p(No God)(+f2).\nClaim3: Rationality requires performing the action with the highest expected value.\nHence: Rationality requires belief in God.",
+ pts:["P(God) > 0","EV calculation with +∞ for believing if God exists and finite values otherwise","Premise that rationality requires maximizing EV","Conclusion: rationality requires belief"]},
+{id:"sa_pascal_mixed",t:"pascal",type:"or",q:"Give the mixed-strategies objection to Pascal's Wager and one reply.",
+ model:"Objection (Hájek): grant every premise. The strategy 'flip a fair coin; believe iff heads' has EV ½(∞) + ½(finite) = ∞, as does any act with a positive chance of eventually wagering for God. So maximizing EV doesn't single out belief, and the argument is invalid.\nReply: add a tie-breaker (maximize the probability of salvation), or reformulate with vector-valued utilities (heavenly, earthly) ranked lexicographically. Then wagering gets heavenly expectation p and a mixed strategy only q·p < p. Hájek: the original argument is still invalid as stated.",
+ pts:["Coin-flip (or any) mixed strategy also gets infinite EV","So belief isn't uniquely EV-maximizing → invalid","A reply: tie-breaker or a reformulation that distinguishes expectations (e.g. lexicographic/vector-valued)","Notes the reply changes the argument / Hájek's rejoinder"]},
+{id:"sa_manygods",t:"pascal",type:"ex",q:"Explain the Many Gods objection in 2–4 sentences.",
+ model:"Pascal says reason can't establish God's nature, so we must consider many possible gods, e.g. one that saves only Christian worshippers and one that saves only Islamic worshippers. In the expanded decision table each belief act gets +∞ under one god and −∞ under a rival, so the expected values involve ∞ − ∞ and can't be ranked. Pascal's 2×2 table was too simple, and maximizing EV no longer tells you which god to believe in.",
+ pts:["Multiple possible gods that damn rival believers","Pascal himself says we can't know God's nature","Each act gets −∞ in some column → EVs undefined/unrankable"]},
+{id:"sa_oddie_pc",t:"moral",type:"pc",q:"State Oddie's argument about embryo experimentation in premise–conclusion form, including the decision rule.",
+ model:"(1) Under uncertainty, maximize expected value; moral uncertainty is like any other.\n(2) Table: if embryos have adult moral status (p), experimenting yields g − l; if not (1−p), g; not experimenting yields 0 either way. So E[Experiment] = g − p·l and E[Not] = 0: experiment just in case g ≥ p·l.\n(3) p is a reasonable amount (e.g. 50%, 10%, 1%).\n(4) l, the badness of experimenting on non-consenting adult humans, is not comparable to the goods from such experiments.\n(C) So p·l > g: experimenting on embryos is impermissible.",
+ pts:["Maximize EV / moral uncertainty treated like other uncertainty","Correct table or E[Experiment] = g − p·l","Rule: experiment iff g ≥ p·l","p is non-negligible","l is incomparably large","Conclusion: impermissible"]},
+{id:"sa_qaly_methods",t:"qaly",type:"ex",q:"Explain how the standard gamble and the time trade-off assign QALY scores (2–4 sentences, one example each).",
+ model:"Standard gamble: compare living with the condition to a treatment with probability p of full cure and 1−p of painless death; the p at which you're indifferent is the score (indifferent at .7 → .7). Time trade-off: compare 10 years with the condition to t years in full health; the indifference point gives score t/10 (10 bedridden years ≡ 4 healthy → .4). Both aim at an interval scale so QALY gains can be compared and divided into costs.",
+ pts:["SG: indifference probability of cure = score","TTO: t/10 from years traded","Correct example for each","(bonus) interval scale point"]},
+{id:"sa_doublejeopardy",t:"qaly",type:"or",q:"State the double jeopardy objection to QALY maximization and give Singer et al.'s strongest reply.",
+ model:"Objection (Harris): people with disabling conditions suffer twice: first the condition, then lower priority for life-saving care, because their saved years count for fewer QALYs (Michelle at .5 gains 20 QALY from a transplant, Nina at .95 gains 38). That seems unjust.\nReply (veil of ignorance): rational egoists choosing allocation rules without knowing which patient they'd be would choose to favour the person with the greater interest in continued life, i.e. QALY-based allocation, so double jeopardy isn't a sign of injustice. (Also: in amelioration cases QALYs track change and can favour the disabled; and the same verdict arises from life-expectancy differences, Otto vs Richard.)",
+ pts:["Two misfortunes: condition + lower priority","Why: saved years scored lower → fewer QALYs","Veil of ignorance / hypothetical consent reply","(bonus) amelioration or Otto/Richard point"]},
+{id:"sa_te_problem",t:"te",type:"ex",q:"Explain the difference between ETEs and PTEs and why each is a problem for decision theory.",
+ model:"An epistemically transformative experience teaches you what something is like, which you can only learn by having it (tasting durian). A personally transformative experience changes what you value (becoming a parent). Decision theory needs a utility for every outcome. With an ETE you can't know that utility in advance; with a PTE it's unclear whose utilities count, present or future you. Either way step 2 of the EU procedure fails.",
+ pts:["ETE = learn what it's like only by having it","PTE = values change","Decision theory needs utilities for outcomes (step 2)","ETE: can't know them; PTE: which self's utilities?"]},
+{id:"sa_te_authentic",t:"te",type:"or",q:"Give Paul's inauthenticity objection to Pettigrew's ETE solution, and Pettigrew's reply.",
+ model:"Pettigrew's solution: treat uncertainty about your own utilities as uncertainty about the world, and set credences from data about others (e.g. 87% of first-time tasters find durian disgusting).\nObjection (Paul): then you're deciding on the basis of other people's preferences, the hallmark of an inauthentic choice.\nReply: you use others' reports as evidence about your own utility function, not as values you defer to. If you learned the sample was unlike you, you'd abandon their numbers. Deferring to morality or a group means using their utility function; this uses your own, just under uncertainty.",
+ pts:["Describes the redescription/statistics strategy","Objection: relying on others' preferences = inauthentic","Reply: others' data is evidence about MY utilities","Contrast with deferring (would drop unlike-me data)"]},
+{id:"sa_collective_pc",t:"collective",type:"pc",q:"State the collective action problem in premise–conclusion form, using factory farming.",
+ model:"(1) A practice done by many individuals (buying factory-farmed chicken) has net negative utility.\n(2) So we condemn the practice on consequentialist grounds.\n(3) But a single individual's purchase makes no difference to the extent of the practice (inefficacy).\n(C) So it seems impossible to condemn the individual's purchase on consequentialist grounds.",
+ pts:["Practice with net negative utility","Condemned on consequentialist grounds","Individual act makes no difference","Conclusion: can't condemn the individual act"]},
+{id:"sa_kagan",t:"collective",type:"ex",q:"Explain Kagan's solution to the collective action problem (2–4 sentences, with the expected-value idea).",
+ model:"Kagan treats these as threshold (triggering) cases: most purchases make no difference, but one in roughly T triggers an order of T more chickens; strictly, what matters is whether your cohort's size hits a multiple of T. Since you don't know whether yours will, it's decision under uncertainty: a 1/T chance of causing T chickens' suffering = an expected one chicken's suffering, which outweighs your small pleasure. So EU(buy) < 0 and consequentialism condemns it, unless you know you won't trigger.",
+ pts:["Threshold/triggering structure","Lack of knowledge → expected value","1/T × T = one unit of expected harm (EU = g − B/n < 0)","Knowledge caveat or cohort point"]},
+{id:"sa_norcross_pc",t:"harms",type:"pc",q:"State Norcross's argument against 'Worse' in premise–conclusion form.",
+ model:"(Risk) It's better that one person die than that five million each incur a one-in-a-million risk of dying.\n(Many Headaches) It's better that five million people each incur a one-in-a-million risk of dying than that they each suffer a moderate headache. (From Headache plus transitivity.)\n(Transitivity) 'Better than' is transitive.\n(C) So it's better that one person die than that five million suffer headaches: Worse is false; small harms can aggregate to outweigh a death.",
+ pts:["Risk","Many Headaches (via Headache)","Transitivity","Conclusion denies Worse / standard consequentialism"]},
+{id:"sa_norcross_risk",t:"harms",type:"or",q:"Give the 'chance no one is harmed' objection to Risk and Norcross's reply.",
+ model:"Objection: Risk is false. With five million people each at a one-in-a-million risk, there's some chance nobody dies, whereas closing the other vent kills one person for certain.\nReply: that chance is under 1% (≈ e⁻⁵ ≈ .0067), and there's a fair chance more than five die. Denying Risk means preferring an overwhelming likelihood of many deaths over one certain death merely because of a tiny chance nobody dies, which is clearly unacceptable. Our verdict about Agnes wouldn't change if she had a one-in-a-million chance of recovering anyway.",
+ pts:["States objection: tiny chance no one harmed","Reply: chance is < 1% / expected deaths = 5","Denying Risk prefers likely many deaths to one certain death","(bonus) Agnes point or calculation"]},
+{id:"sa_hume_pc",t:"bayes",type:"pc",q:"State Hume's argument about miracles in premise–conclusion form (the slides' interpretation).",
+ model:"(1) Testimony of a miracle has two possible causal mechanisms: a miracle occurred (M), or the witnesses lied, were mistaken, exaggerated… (not M).\n(2) When two mechanisms could explain something, believe the more likely one: believe M only if Pr(M) > Pr(not M).\n(3) Pr(not M) > Pr(M) always: lying and error are common, miracles go against all our evidence.\n(C) It is basically never reasonable to believe a miracle occurred on the basis of testimony.",
+ pts:["Two causal mechanisms M / not M","Believe the more probable","Pr(not M) > Pr(M) always","Conclusion"]},
+{id:"sa_hume_lottery",t:"bayes",type:"or",q:"Give the lottery objection to Hume and the Bayesian response (Dawid & Gillies).",
+ model:"Objection (Price): Pr(typo) > Pr(these exact numbers won), so Hume's rule says never believe a newspaper's lottery report, which is absurd. So the rule is too strong.\nResponse: compare posteriors with Bayes, not priors. In the lottery, Pr(report | not A) is also tiny, because the paper must print that specific wrong number (.2 × 10⁻⁶), so it cancels the tiny prior → Pr(A | report) = .8. For a miracle, nothing cancels the prior: even with Pr(a|A) = .99, Pr(a|not A) can't be below about 10⁻³, so Pr(M | testimony) ≈ 10⁻³. Hume's conclusion survives, relative to scientific background knowledge.",
+ pts:["Lottery objection stated","Need posterior / Bayes, not prior comparison","Lottery: Pr(a|not A) tiny → cancels → .8","Miracle: no cancellation → ≈10⁻³ (background knowledge caveat is a bonus)"]},
+{id:"sa_prosecutor",t:"bayes",type:"ex",q:"Explain the prosecutor's fallacy using Sally Clark (2–4 sentences).",
+ model:"The expert said two SIDS deaths in one family has probability about 1 in 73 million and inferred she was probably guilty. That number is Pr(2 deaths | innocent), not Pr(innocent | 2 deaths). To get the latter you must compare it with how probable the alternative explanation, a double murder by a mother, is, which is also extremely rare. (Separately, squaring 1/8543 wrongly assumes the two deaths are independent.)",
+ pts:["Identifies the 1 in 73 million figure","It's Pr(evidence | innocent), not Pr(innocent | evidence)","Must compare with probability of double murder (Bayes)","(bonus) independence issue"]},
+{id:"sa_doom_pc",t:"doomsday",type:"pc",q:"State the Carter–Leslie doomsday argument in premise–conclusion form, including what it does NOT claim.",
+ model:"(1) Prefer hypotheses that make your observations fairly expected (the cat; Little Puddle vs London).\n(2) If humanity lasts very long and grows, you are extraordinarily early among all humans; if it ends soon, you're fairly ordinary (about 10% of all humans ever born are alive now).\n(3) Your birth rank is relevantly like your name being drawn early from an urn of unknown size.\n(C) By Bayes's rule, the probability of Doom Soon should be shifted upward from whatever prior you had (e.g. 1% → about 50%).\nIt does not claim we are doomed: it magnifies risk estimates reached by other means.",
+ pts:["Observation-favouring principle","Early vs ordinary position under the two hypotheses","Urn/birth-rank analogy","Conclusion: Bayesian shift toward Doom Soon","Not a prediction of doom; magnifies existing estimates"]},
+{id:"sa_doom_roman",t:"doomsday",type:"or",q:"Give the 'Roman' objection to the doomsday argument and two of Leslie's replies.",
+ model:"Objection: an ancient Roman using the same reasoning would have concluded humanity would soon end, and been wrong, so the reasoning is bad.\nReplies (any two): (1) So what: a probabilistic argument can mislead someone improbably placed without being poor reasoning; a false conclusion isn't an unwarranted one. (2) If the race ends by 2150, that would be fairly soon after Roman times. (3) No population explosion was under way or predictable then. (4) Romans may have had grounds for only a tiny prior for extinction, unlike us with nuclear weapons and pandemics.",
+ pts:["States the Roman objection","Reply 1 (so what / false ≠ unwarranted) or reply 2/3/4","A second distinct reply"]},
+];
+
+/* =========================================================
+   FLASHCARDS
+   ========================================================= */
+const CARDS = [
+["pascal","Dominance","A1 dominates A2 iff in every state A1's outcome is at least as good as A2's, and in some state better. It's irrational to perform a dominated act."],
+["pascal","Pascal's Claim3","Rationality requires performing the action with the highest expected value."],
+["pascal","Mixed strategy","Randomizing between pure acts (e.g. believe iff a coin lands heads). Under Pascal's table it also has EV = ∞."],
+["pascal","Many Gods objection","Many possible gods damn rival believers; every belief act gets −∞ in some state, so the EVs can't be ranked."],
+["pascal","Hájek's verdict","The Wager is invalid: even granting the premises, belief isn't uniquely EV-maximizing."],
+["pascal","Lexicographic (vector) value","Hájek §4.2: outcomes valued as (earthly, heavenly); any heavenly gain beats any earthly gain. Wagering gets heavenly expectation p, a mixed strategy q·p."],
+["ev","Expected value","EV[A] = Σ Pr(Ci|A)·V(Ci|A), the probability-weighted average of A's outcomes."],
+["ev","Indifference → ?","EU[C1] = EU[C2]. A strict preference gives EU[C1] > EU[C2]."],
+["ev","Three theories of utility (L4)","Experience-based (experience machine), objective list, preference-based (advertising)."],
+["ev","Interval scale","A scale where differences are meaningful but zero and unit are arbitrary. Utility (and QALY) need this."],
+["moral","Moral uncertainty","Uncertainty about the moral value of outcomes (e.g. whether embryos have adult moral status), as opposed to what will happen."],
+["moral","Oddie's rule","Experiment just in case g ≥ p·l (E[Experiment] = g − p·l; E[Not] = 0)."],
+["moral","l (Oddie)","The disvalue of experimenting on non-consenting adult humans (Mengele). Claimed incomparable to the goods."],
+["qaly","QALY","Quality-adjusted life year: full health = 1, death = 0, a year in a condition = its score."],
+["qaly","Standard gamble","Score = the probability p of full cure (vs 1−p death) at which you're indifferent to living with the condition."],
+["qaly","Time trade-off","10 years with the condition ≡ t years full health → score t/10."],
+["qaly","Cost per QALY","[Cost of intervention] / [QALY gained]. Lower = higher priority."],
+["qaly","Double jeopardy","Disabled people suffer the condition and then lower priority for life-saving care under QALY maximization."],
+["qaly","Veil of ignorance reply","Singer et al.: rational egoists not knowing which patient they'd be would choose QALY allocation, so double jeopardy isn't unjust."],
+["qaly","Life-time vs timeless view","Kappel & Sandøe: equality over whole lives (past suffering earns priority). Singer et al.: past suffering can't be reduced; minimize present and future."],
+["te","ETE","Epistemically transformative experience: teaches what an experience is like, learnable only by having it (durian)."],
+["te","PTE","Personally transformative experience: changes your core values (becoming a parent)."],
+["te","Redescription strategy","Fine-grain states to include hypotheses about your own utility function; set credences from evidence."],
+["te","Inauthenticity","Paul: deciding on the basis of others' preferences. Pettigrew: others' data is evidence about my own utilities."],
+["te","Global utility","Weighted sum of local utilities: w_past·U_past + w_present·U_present + w_future·U_future (weights sum to 1)."],
+["collective","Inefficacy worry","My buying or not doesn't make any difference to production."],
+["collective","Threshold (triggering) case","Most acts make no difference; one act tips a threshold and makes a big one."],
+["collective","Batch replacement model","Store orders in batches (100 on Sunday; +50 if ≤ 50 left Thursday)."],
+["collective","Kagan's two corrections","(1) Size of the cohort vs the last individual; (2) lack of knowledge."],
+["collective","Kagan's EU","EU = g − (1/T)(T·B/n) = g − B/n < 0, since B > n·g."],
+["harms","Worse","One premature death is worse than any number of 24-hour moderate headaches. Norcross denies it."],
+["harms","Risk","Better that one die than that five million each incur a 1-in-a-million risk of death."],
+["harms","Headache","Better that someone incur a 1-in-a-million risk of death than suffer a moderate 24-hour headache."],
+["harms","Many Headaches","Better that 5 million each incur a 1-in-a-million risk than each suffer a headache (via transitivity)."],
+["harms","Norcross's four options","Deny Worse (his pick), deny Risk, deny Headache / Many Headaches, or deny transitivity."],
+["prob","Basic Idea #1","Pr(A) = # A possibilities / # total, when all possibilities are equally likely."],
+["prob","General 'or' rule","Pr(A or B) = Pr(A) + Pr(B) − Pr(A and B)."],
+["prob","General 'and' rule","Pr(A and B) = Pr(A)·Pr(B|A) = Pr(B)·Pr(A|B)."],
+["prob","Conditional probability","Pr(A|B) = Pr(A and B) / Pr(B)."],
+["prob","Independence","Pr(A|B) = Pr(A), equivalently Pr(A and B) = Pr(A)·Pr(B)."],
+["bayes","Bayes's theorem","Pr(T|E) = Pr(E|T)Pr(T) / [Pr(E|T)Pr(T) + Pr(E|not T)Pr(not T)]."],
+["bayes","Hume's miracle principle","Believe the more likely of two mechanisms; Pr(not M) > Pr(M) always, so never believe a miracle on testimony."],
+["bayes","Price's lottery case","Hume's rule would forbid believing a newspaper's lottery result, which is absurd."],
+["bayes","Prosecutor's fallacy","Confusing Pr(evidence | innocent) with Pr(innocent | evidence) (Sally Clark)."],
+["bayes","Dawid & Gillies' upshot","Lottery report ≈ .8 (tiny numbers cancel); miracle ≈ 10⁻³. Depends on background knowledge K."],
+["doomsday","Anthropic principle","'What we can expect to observe must be restricted by the conditions necessary for our presence as observers' (Carter)."],
+["doomsday","Doom Soon vs Doom Delayed","Two-bin simplification: the race ends by ~2150 vs survives a few thousand centuries at present size or more."],
+["doomsday","Bayesian shift","Updating the prior risk of Doom Soon using your birth rank. It magnifies existing estimates; it doesn't generate them."],
+["doomsday","God's-eye view (Leslie)","Reasoning from information you don't have ('someone had to win'). Estimate from your own evidence."],
+].map((c,i)=>({id:"c"+i,t:c[0],term:c[1],def:c[2]}));
+
+
+/* ===== Week 9 (Oct 19–23): Simulation argument & Boltzmann brains ===== */
+TOPICS.push({id:"sim",name:"Simulation argument (Bostrom)",exam:2},{id:"boltz",name:"Boltzmann brains",exam:2});
+TNAME.sim="Simulation argument (Bostrom)"; TNAME.boltz="Boltzmann brains";
+SCOPES.e2.topics.push("sim","boltz"); SCOPES.all.topics.push("sim","boltz");
+
+LESSONS.sim={title:"Simulation argument (Bostrom)", topic:"sim", src:"10.19 · Bostrom 2003, Are You Living in a Computer Simulation? · no slides posted yet: this sheet is from the reading", html:`
+<div class="sec"><h3>Key terms</h3><dl>
+<dt>Substrate-independence</dt><dd>Mental states can run on many physical substrates. A computer that replicates a brain's computations in fine enough detail (roughly synapse level) would be conscious. Bostrom takes this as given.</dd>
+<dt>Posthuman stage</dt><dd>A civilization that has most of the technology physical law allows, including planet-sized computers.</dd>
+<dt>Ancestor-simulation</dt><dd>A simulation of the entire mental history of humankind (or variations). Bostrom estimates it at about 10³³–10³⁶ operations; a planet-mass computer does about 10⁴² per second.</dd>
+<dt>f<sub>P</sub>, f<sub>I</sub>, N<sub>I</sub></dt><dd>Fraction of human-level civilizations that reach a posthuman stage; fraction of posthuman civilizations interested in running ancestor-simulations; average number of simulations an interested civilization runs.</dd>
+<dt>Bland indifference principle</dt><dd>If a fraction x of observers with human-type experiences are simulated, and you have no information about which kind you are, your credence that you're simulated should be x.</dd></dl></div>
+<div class="sec"><h3>The argument</h3>
+<div class="formula">f_sim = f_P·N·H / (f_P·N·H + H) = f_P·f_I·N_I / (f_P·f_I·N_I + 1)
+(H = average number of people who live before posthumanity; it cancels. N = f_I·N_I.)</div>
+<div class="prem">(P1) Substrate-independence: a suitably detailed simulation of a brain would be conscious.<br>(P2) A posthuman civilization could run hugely many ancestor-simulations using a tiny fraction of its computing power, so N<sub>I</sub> is extremely large.<br>(P3) f_sim = f_P·f_I·N_I / (f_P·f_I·N_I + 1).<br>(C1) So at least one is true: (1) f<sub>P</sub> ≈ 0, almost no civilizations reach posthumanity; (2) f<sub>I</sub> ≈ 0, almost no posthuman civilizations run ancestor-simulations; (3) f<sub>sim</sub> ≈ 1, almost all people with our kind of experiences are simulated.<br>(P4) Bland indifference: Cr(SIM | f_sim = x) = x.<br>(C2) If (3) is true, we are almost certainly in a simulation. And unless we are in a simulation now, our descendants will almost certainly never run ancestor-simulations.</div>
+<p>Bostrom's own verdict: "it seems sensible to apportion one's credence roughly evenly between (1), (2), and (3)." The conclusion is a <b>disjunction</b>, not "we're simulated."</p></div>
+<div class="sec"><h3>Objections and replies (from the paper)</h3><ol>
+<li><b>Isn't this the Doomsday argument's indifference principle?</b> Bostrom: no. Doomsday needs a much stronger premise, that you should reason as a random sample from everyone who will ever live even though you know you're in the early 21st century. The bland principle applies only when you have no information about which group you're in.</li>
+<li><b>Simulated minds and biological minds have different experiences, so why be indifferent?</b> The junk-DNA analogy: if x% of people carry a sequence S with no observable effects, your credence that you carry S should be x% until you're sequenced, even though everyone's experiences differ.</li>
+<li><b>Betting:</b> if everyone bets they're simulated when almost everyone is, almost everyone wins.</li>
+<li><b>Deny substrate-independence:</b> Bostrom grants it is "not entirely uncontroversial." It's the premise an objector would target, and he doesn't defend it in this paper.</li>
+<li><b>Does (3) mean we should "go crazy"?</b> No: empirical study of our world is still the best guide to how it's set up. The main significance of (3) is its role in the three-way disjunction.</li></ol></div>
+<div class="sec"><h3>Common mistakes</h3><ul><li>Stating the conclusion as "we are probably in a simulation." It's "at least one of (1), (2), (3)."</li><li>Forgetting f<sub>I</sub>: N = f<sub>I</sub>·N<sub>I</sub>.</li><li>Confusing f<sub>P</sub> (who survives to posthumanity) with f<sub>sim</sub> (who is simulated).</li><li>Treating it as the Doomsday argument: Bostrom explicitly separates them.</li></ul></div>
+<div class="sec"><h3>Worked example</h3><p>f<sub>P</sub> = .01, f<sub>I</sub> = .01, N<sub>I</sub> = 1,000,000.</p>
+<ol class="steps"><li>f_P·f_I·N_I = .01 × .01 × 1,000,000 = 100</li><li>f_sim = 100 / (100 + 1) = 100/101 ≈ .990</li><li>Bland indifference → Cr(SIM) ≈ .99. Even tiny f<sub>P</sub> and f<sub>I</sub> are swamped when N<sub>I</sub> is huge, which is why one of (1)–(3) must hold.</li></ol></div>`};
+
+LESSONS.boltz={title:"Boltzmann brains", topic:"boltz", src:"10.21–10.23 · Dogramaci & Schoenfield 2024, Why I Am Not a Boltzmann Brain · no slides posted yet: this sheet is from the reading", html:`
+<div class="sec"><h3>Key terms</h3><dl>
+<dt>Boltzmann Brain (BB)</dt><dd>A brain formed by random fluctuations of particles in a very long-lived universe, radically deceived about its surroundings, possibly with experiences just like yours.</dd>
+<dt>Ordinary Observer (OO)</dt><dd>An observer who is not massively deceived about their nearby surroundings.</dd>
+<dt>BBU</dt><dd>A Boltzmann Brain Universe: so many BBs that even BBs with your exact experience vastly outnumber OOs.</dd>
+<dt>Bayes factor</dt><dd>The ratio of likelihoods Pr(E|BB)/Pr(E|OO). Posterior odds = prior odds × Bayes factor.</dd>
+<dt>Egocentric content</dt><dd>Evidence about your own here and now ("here is an apple, now"), not a bare "an apple exists somewhere."</dd>
+<dt>Center Indifference (CI)</dt><dd>Elga, Builes: spread credence evenly over all centered worlds (times/places in one world) compatible with your evidence.</dd>
+<dt>Confirmation</dt><dd>E confirms H iff Pr(H|E) &gt; Pr(H). Being confirmed is not the same as being made likely, and confirmation is not transitive.</dd></dl></div>
+<div class="sec"><h3>The skeptical argument (the two steps)</h3>
+<div class="prem">Step 1: Make the ordinary scientific inferences that lead to accepting a BBU model, a universe almost entirely populated by BBs, many with experiences indistinguishable from yours.<br>Step 2: Use indifference reasoning to conclude that, given this model, you're far more likely to be a BB than an OO.<br>(C) So your evidence makes it likely you're a BB (skepticism).</div>
+<p>Carroll (2021) rejects Step 1 (accepting a BBU is "cognitively unstable," so its prior must be low). Dogramaci (2020) and this paper reject Step 2.</p></div>
+<div class="sec"><h3>Dogramaci &amp; Schoenfield's Bayesian reply</h3>
+<div class="formula">Pr(BB|E) / Pr(OO|E)  =  Pr(BB)/Pr(OO)  ×  Pr(E|BB)/Pr(E|OO)
+   (posteriors)          (priors)          (Bayes factor)</div><ol>
+<li>Assume anti-skeptical priors: Pr(BB) is very low. To get a skeptical posterior the Bayes factor must be huge (priors 1:100 need likelihoods 100:1 to pass 50%).</li>
+<li><b>Phenomenal theory of evidence:</b> a BB's experiences are random and unconstrained (it could have any incoherent jumble), while an OO's must be fairly coherent. So any particular coherent experience is less likely for a BB: Pr(E|BB) &lt; Pr(E|OO), and the factor is below 1.</li>
+<li><b>Propositional (egocentric) theory:</b> evidence is "here is an apple, this hand, now it's raining…". A BB is overwhelmingly likely to have nothing but empty void around it, so again Pr(E|BB) is far lower.</li>
+<li>So even granting that E strongly confirms we live in a BBU, E does <b>not</b> confirm that I'm a BB. Step 2 fails.</li></ol></div>
+<div class="sec"><h3>Why the skeptical argument tempts us (their diagnoses)</h3><ol>
+<li><b>Treating confirmation as transitive.</b> E confirms BBU, and BBU confirms BB, but E need not confirm BB. Roulette: "1 or 2" confirms "2 or 3," which confirms "3 or 4," but "1 or 2" rules out "3 or 4." Related errors: ignoring part of your total evidence, and confusing "confirmed" with "likely."</li>
+<li><b>Center Indifference.</b> CI validates Step 2. But with a plausible premise (Defeat: if I'm a BB my evidence is random, so Pr(H<sub>E</sub>|BB&amp;E) &lt; ½), CI implies Result 1, Pr(H<sub>E</sub>|E) &lt; ½: evidence can never strongly confirm that most brains with my evidence are BBs. Worse, Result 2: Pr(H<sub>E</sub>|E&amp;OO) &lt; ½, even supposing I'm an ordinary observer. That's absurd, so reject CI. It also shows "cognitive instability" (Carroll) isn't the real explanation.</li></ol></div>
+<div class="sec"><h3>Common mistakes</h3><ul><li>Thinking D&amp;S deny the physics. They grant E may confirm a BBU; they deny it confirms that <i>I'm</i> a BB.</li><li>Mixing up the hypotheses "I live in a BBU" and "I'm a BB": different likelihoods.</li><li>Multiplying probabilities instead of odds in the odds form of Bayes.</li></ul></div>
+<div class="sec"><h3>Worked example (odds form)</h3><p>Prior Pr(BB) = .01. Suppose Pr(E|BB)/Pr(E|OO) = 1/10.</p>
+<ol class="steps"><li>Prior odds = .01/.99 = 1/99</li><li>Posterior odds = (1/99) × (1/10) = 1/990</li><li>Pr(BB|E) = 1/(990 + 1) = 1/991 ≈ .0010: the evidence lowered it.</li><li>For Pr(BB|E) &gt; .5 you'd need a Bayes factor &gt; 99 (prior odds 1:99).</li></ol></div>`};
+
+GENS.sim_frac={topic:"sim", name:"Bostrom's f_sim", gen(L){
+  const fP=pick([.001,.01,.05,.1]), fI=pick([.001,.01,.1]), NI=pick([1e3,1e4,1e5,1e6]); const k=fP*fI*NI; const fs=k/(k+1);
+  const parts=[{label:"f_P·f_I·N_I",answer:k,tol:Math.max(k*.005,1e-6)},{label:"f_sim",answer:fs,tol:Math.max(fs*.005,1e-6)}];
+  const steps=[`f_P·f_I·N_I = ${fP} × ${fI} × ${NI.toLocaleString()} = ${fp(k)}`,`f_sim = ${fp(k)} / (${fp(k)} + 1) = ${fp(fs)}`];
+  if(L>=2){const x=pick([.9,.99,.999]); const need=x/((1-x)*fP*fI); parts.push({label:`Smallest N_I that makes f_sim ≥ ${x}`,answer:need,tol:need*.01}); steps.push(`f_sim ≥ ${x} ⇔ f_P·f_I·N_I ≥ ${x}/(1 − ${x}) = ${f(x/(1-x))}`,`N_I ≥ ${f(x/(1-x))} / (${fP} × ${fI}) = ${f(need,2)}`);}
+  return {prompt:`Bostrom's notation: a fraction f_P = ${fP} of human-level civilizations reach a posthuman stage, a fraction f_I = ${fI} of those are interested in running ancestor-simulations, and each interested civilization runs N_I = ${NI.toLocaleString()} of them on average.${L>=2?" (Then find how large N_I would have to be for the stated f_sim.)":""}`,parts,steps};
+}};
+GENS.bb_bayes={topic:"boltz", name:"Boltzmann: odds-form Bayes", gen(L){
+  const p=pick([.01,.001,.05]); const LR=pick([.1,.5,2,10,100]); const po=p/(1-p); const post=po*LR; const pb=post/(1+post);
+  const parts=[{label:"Prior odds Pr(BB)/Pr(OO)",answer:po,tol:po*.01},{label:"Pr(BB|E)",answer:pb,tol:Math.max(pb*.01,1e-6)},{label:"Did E confirm that you're a BB?",kind:"choice",options:["Yes: Pr(BB|E) > Pr(BB)","No: Pr(BB|E) ≤ Pr(BB)"],answer:pb>p?0:1}];
+  const steps=[`Prior odds = ${p}/${f(1-p)} = ${fp(po)}`,`Posterior odds = prior odds × Bayes factor = ${fp(po)} × ${LR} = ${fp(post)}`,`Pr(BB|E) = odds/(1 + odds) = ${fp(pb)}`,`Confirmation compares posterior with prior: ${fp(pb)} vs ${p}. Bayes factor ${LR>1?"> 1 → confirms":"< 1 → disconfirms"}.`];
+  if(L===3){parts.push({label:"Smallest Bayes factor that makes Pr(BB|E) > .5",answer:(1-p)/p,tol:.01*(1-p)/p}); steps.push(`Need posterior odds > 1 → Bayes factor > 1/prior odds = ${f((1-p)/p)}`);}
+  return {prompt:`Your prior that you're a Boltzmann Brain is Pr(BB) = ${p} (and Pr(OO) = ${f(1-p)}). Your total evidence E has Bayes factor Pr(E|BB)/Pr(E|OO) = ${LR}.`,parts,steps};
+}};
+GEN_IDS.push("sim_frac","bb_bayes");
+
+MCQ.push(
+{t:"sim",d:1,q:"What is the conclusion of Bostrom's simulation argument?",o:["We are almost certainly in a computer simulation","At least one of: (1) almost no civilizations reach posthumanity, (2) almost no posthuman civilizations run ancestor-simulations, (3) almost all people like us are simulated","Posthumans will certainly simulate us","Substrate-independence is true"],a:1,e:"The conclusion is a three-way disjunction. Bostrom suggests splitting credence roughly evenly among the three."},
+{t:"sim",d:1,q:"Which assumption from philosophy of mind does Bostrom take as given?",o:["Dualism","Substrate-independence: the right computations on silicon would be conscious","The Turing test","Center Indifference"],a:1,e:"Section II. He needs only a weak version: replicating the brain's computations at roughly synapse level would suffice for experience."},
+{t:"sim",d:2,q:"Bostrom's bland indifference principle says…",o:["be indifferent between all hypotheses you lack evidence about","if a fraction x of observers like you are simulated and you have no information about which you are, your credence you're simulated should be x","reason as a random sample from everyone who will ever live","weight past, present and future selves equally"],a:1,e:"Cr(SIM | f_sim = x) = x. He contrasts it with broader (Laplacean) indifference principles and with the Doomsday argument's stronger premise."},
+{t:"sim",d:2,q:"How does Bostrom distinguish his indifference principle from the Doomsday argument's?",o:["He doesn't; they're the same","Doomsday needs you to reason as a random sample of all humans ever, even though you know you're in the early 21st century; his principle applies only when you have no information about which group you're in","Doomsday uses no indifference","His principle is stronger"],a:1,e:"Section V: the bland principle is weaker and so isn't tainted by Doomsday's counterintuitive implications."},
+{t:"sim",d:3,q:"In f_sim = f_P·f_I·N_I/(f_P·f_I·N_I + 1), why does H (people per pre-posthuman civilization) disappear?",o:["It's assumed to be 1","It appears in every term of numerator and denominator (f_P·N·H / (f_P·N·H + H)), so it cancels","Bostrom ignores real people","It's included in N_I"],a:1,e:"Each simulation contains about H people, as does the original civilization, so H cancels."},
+{t:"sim",d:2,q:"What's Bostrom's junk-DNA analogy for?",o:["Showing simulations are cheap","Supporting indifference even though different people have qualitatively different experiences","Arguing for substrate-independence","Showing f_P is small"],a:1,e:"If x% carry an undetectable sequence S, your credence you carry S is x%, despite everyone's experiences differing."},
+{t:"boltz",d:1,q:"In Dogramaci & Schoenfield, which step of the skeptical argument do they reject?",o:["Step 1: inferring we live in a BBU","Step 2: inferring from the BBU that I'm probably a BB","Neither","Both"],a:1,e:"They side with Dogramaci (2020) against Carroll: even granting E confirms a BBU, E doesn't confirm that I'm a BB."},
+{t:"boltz",d:2,q:"Why do D&S say Pr(E|BB) < Pr(E|OO) on the phenomenal theory of evidence?",o:["BBs don't have experiences","A BB's experiences are random and unconstrained, so it could have far more possible experiences than an OO; any particular coherent experience is less likely for it","BBs are rarer","Because of Center Indifference"],a:1,e:"An OO's experiences must be coherent enough to track a real environment; a BB's need not, so its probability is spread over many more possibilities."},
+{t:"boltz",d:2,q:"Why does egocentric evidence ('here is an apple, now') hurt the BB hypothesis?",o:["BBs can't use indexicals","A BB is overwhelmingly likely to have nothing but empty void around it, so 'there's an apple here' is very unlikely given BB","Apples are rare in a BBU","It makes Pr(E|OO) zero"],a:1,e:"Forming extra stable objects around a randomly formed brain is drastically more unlikely than the brain alone."},
+{t:"boltz",d:2,q:"'E confirms BBU, and BBU confirms BB, so E confirms BB.' What's wrong?",o:["Nothing","Confirmation isn't transitive (roulette: 1-or-2 confirms 2-or-3, which confirms 3-or-4, but 1-or-2 rules out 3-or-4)","BBU doesn't confirm BB","E doesn't confirm BBU"],a:1,e:"D&S's first diagnosis. They actually accept both premises; the inference is the mistake."},
+{t:"boltz",d:3,q:"What is D&S's Result 2, and why does it matter?",o:["Pr(BB|E) < ½: anti-skepticism","Given CI + Defeat, Pr(H_E|E & OO) < ½: no evidence could support 'most brains with my evidence are BBs' even supposing I'm an ordinary observer. That's absurd, so CI should be rejected","Pr(BBU) = 0","CI is consistent with skepticism"],a:1,e:"It also undercuts Carroll's 'cognitive instability' explanation, since supposing I'm an OO removes the instability yet the limit remains."},
+{t:"boltz",d:3,q:"With prior odds 1:100 that you're a BB, how big must the Bayes factor be for Pr(BB|E) > 50%?",o:["Greater than 1","Greater than 10","Greater than 100","Greater than 1000"],a:2,e:"Posterior odds = 1/100 × factor > 1 ⇒ factor > 100. D&S's own illustration."}
+);
+
+SA.push(
+{id:"sa_sim_pc",t:"sim",type:"pc",q:"State Bostrom's simulation argument in premise–conclusion form.",
+ model:"(P1) Substrate-independence: a computer replicating a brain's computations in fine enough detail would be conscious.\n(P2) A posthuman civilization could run enormous numbers of ancestor-simulations with a tiny fraction of its computing power (N_I is extremely large).\n(P3) The fraction of observers with human-type experiences who are simulated is f_sim = f_P·f_I·N_I / (f_P·f_I·N_I + 1).\n(C1) So at least one holds: (1) f_P ≈ 0; (2) f_I ≈ 0; (3) f_sim ≈ 1.\n(P4) Bland indifference: if a fraction x of observers like you are simulated and you can't tell which you are, your credence that you're simulated should be x.\n(C2) So if (3), you are almost certainly simulated; and unless we're simulated now, our descendants will almost certainly never run ancestor-simulations.",
+ pts:["Substrate-independence","Posthuman computing power makes N_I huge","f_sim formula or the 'fraction of observers' idea","Three-way disjunction as the conclusion","Bland indifference principle linking f_sim to credence"]},
+{id:"sa_sim_or",t:"sim",type:"or",q:"Give the objection that Bostrom's indifference principle is the same one behind the Doomsday argument, and his reply.",
+ model:"Objection: the simulation argument treats you as a random sample from observers, just as Doomsday treats you as a random sample from all humans ever. Doomsday's implications are counterintuitive, which casts doubt on the shared principle.\nReply: they aren't the same. Doomsday needs a stronger premise: reason as a random sample from everyone who will ever live even though you know you live in the early 21st century. The bland principle only says Cr(SIM | f_sim = x) = x when you have no information about which group you belong to. Support: the junk-DNA analogy and the betting argument (if everyone bets on being simulated when most are, most win).",
+ pts:["States the objection: same indifference as Doomsday","Doomsday's premise is stronger (random sample of all people ever despite knowing your time)","Bland principle applies only with no information about your group","(bonus) junk-DNA or betting support"]},
+{id:"sa_bb_pc",t:"boltz",type:"pc",q:"State the two-step skeptical argument from Boltzmann Brains, and say which step Dogramaci & Schoenfield reject.",
+ model:"Step 1: Make the ordinary scientific inferences that lead to accepting a model on which we live in a BBU, a universe populated almost entirely by Boltzmann Brains, many with experiences indistinguishable from mine.\nStep 2: Using indifference reasoning (e.g. Center Indifference), conclude that given this model I'm far more likely to be a BB than an ordinary observer.\n(C) So my evidence makes it likely that I'm a BB, and my beliefs about my surroundings are unreliable.\nCarroll rejects Step 1; Dogramaci & Schoenfield accept Step 1 (for argument's sake) and reject Step 2.",
+ pts:["Step 1: evidence → accept BBU","Step 2: indifference → probably a BB","Skeptical conclusion","D&S reject Step 2 (Carroll rejects Step 1)"]},
+{id:"sa_bb_reply",t:"boltz",type:"ex",q:"Explain in 2–4 sentences why, according to Dogramaci & Schoenfield, our evidence doesn't confirm that we're Boltzmann Brains.",
+ model:"By Bayes, posterior odds that I'm a BB = prior odds × Pr(E|BB)/Pr(E|OO); with anti-skeptical priors, skepticism needs a huge Bayes factor. But the factor is below 1: a BB's experiences are random and unconstrained, so any particular coherent experience is less likely for it, and egocentric evidence like 'here is an apple' is very unlikely for a brain floating in an empty void. So E lowers, not raises, the probability that I'm a BB, even if E strongly confirms that I live in a BBU.",
+ pts:["Odds-form Bayes: priors × Bayes factor","Anti-skeptical priors so skepticism needs a large factor","Pr(E|BB) < Pr(E|OO) (random experiences / void around a BB)","E can confirm BBU without confirming I'm a BB"]},
+{id:"sa_bb_trans",t:"boltz",type:"or",q:"Give the 'transitivity' route to Boltzmann skepticism and D&S's diagnosis of what goes wrong.",
+ model:"Argument: (1) E confirms that I live in a BBU; (2) living in a BBU confirms that I'm a BB; so E confirms that I'm a BB.\nDiagnosis: both premises can be true, but confirmation isn't transitive. Roulette: 'landed 1 or 2' confirms '2 or 3', which confirms '3 or 4', yet '1 or 2' rules out '3 or 4'. The mistake also involves neglecting part of your total evidence (E is much more than 'there are zillions of BBs') and confusing a hypothesis being confirmed with it being made likely.",
+ pts:["States premises (1) and (2) and the conclusion","Confirmation is not transitive","Roulette (or other) counterexample","(bonus) total evidence / confirmed vs likely"]}
+);
+
+
+/* =========================================================
+   UNITS (from the Canvas schedule page) + user focus weights
+   ========================================================= */
+const UNITS=[
+{wk:1,dates:'Aug 24–28',title:"Pascal's Wager: dominance & expected value",topics:['pascal','ev'],work:'HW1 posted (due Fri Sep 4)',read:'Jackson 2021 · Hájek 2003 §1–3, §4.2 · slides L1–L3'},
+{wk:2,dates:'Aug 31–Sep 4',title:'Utility scales & moral uncertainty',topics:['ev','moral'],work:'HW1 due Fri Sep 4',read:'Oddie 1994 · slides L4–L6'},
+{wk:3,dates:'Sep 9–11',title:'QALY',topics:['qaly','ev'],work:'HW2 due Fri Sep 11 (key posted)',read:'Singer et al. 1995 · slides L6–L8'},
+{wk:4,dates:'Sep 14–18',title:'QALY objections & transformative experience',topics:['qaly','te'],work:'HW3 due Fri Sep 18 (key posted)',read:'Singer et al. 1995 · Pettigrew 2015 · slides L8–L10'},
+{wk:5,dates:'Sep 22–25',title:'Collective action',topics:['collective','te'],work:'HW4 due Fri Sep 25 (key posted, Q3 has errors)',read:'Kagan 2011 · slides L11–L13 · Exam 1 study guide'},
+{wk:6,dates:'Sep 28–Oct 2',title:'Exam 1 · Adding harms',topics:['harms','prob'],work:'Exam 1 Mon Sep 28',read:'Norcross 1998 · slides L14–L15'},
+{wk:7,dates:'Oct 5–9',title:'Hume on miracles & probability',topics:['bayes','prob'],work:'HW5 due Fri Oct 9 (key posted)',read:'Dawid & Gillies 1989 · slides L16–L18'},
+{wk:8,dates:'Oct 12–16',title:'Bayes & the Doomsday argument',topics:['bayes','doomsday'],work:'HW6 due Fri Oct 16',read:'Dawid & Gillies 1989 · Leslie 1996 pp. 187–205 · slide L19'},
+];
+const FOCUS={bayes:2,doomsday:2,ev:2,harms:1.6,pascal:1.6,moral:1.6,qaly:1.6,te:1.6,collective:1.6}; // Debu, Oct 16: weakest = Bayes/Hume/Doomsday, EV & utility scales, arguments
+UNITS.push({wk:9,dates:'Oct 19–23',title:'Simulation argument & Boltzmann brains',topics:['sim','boltz'],work:'HW7 due Fri Oct 23 (Bayes problems)',read:'Bostrom 2003 · Dogramaci & Schoenfield 2024 · no slides posted yet'});
+Object.assign(FOCUS,{sim:1.6,boltz:2});
+const FINAL={date:'Tue Dec 15',time:'1:30–4:00 pm',where:'regular classroom'}; // syllabus
+
+/* =========================================================
+   STATE (browser storage, survives updates to the same link)
+   ========================================================= */
+const KEY='cwgym.v2';
+let S={stats:{},gens:{},sa:{},exams:{},learnSeen:{}};
+try{const r=localStorage.getItem(KEY); if(r) S=Object.assign(S,JSON.parse(r));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function bump(t,ok,gid){const s=S.stats[t]||(S.stats[t]={r:0,w:0}); ok?s.r++:s.w++; if(gid){const g=S.gens[gid]||(S.gens[gid]={r:0,w:0}); ok?g.r++:g.w++;} save();}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,1800);}
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function etToday(){try{return new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}catch(e){return new Date().toISOString().slice(0,10);}}
+function daysTo(iso){const t=etToday();return Math.round((Date.UTC(+iso.slice(0,4),+iso.slice(5,7)-1,+iso.slice(8,10))-Date.UTC(+t.slice(0,4),+t.slice(5,7)-1,+t.slice(8,10)))/864e5);}
+(function(){const d=daysTo(EXAM_DATE);$('#countdown').textContent=d>1?`${d} days to Exam 2 · Mon Nov 2`:d===1?'Exam 2 tomorrow · Mon Nov 2':d===0?'Exam 2 today':'Exam 2 done · Final Tue Dec 15';})();
+function topicStats(){return TOPICS.map(T=>{const s=S.stats[T.id]||{r:0,w:0};const tot=s.r+s.w;return {k:T.id,n:T.name,r:s.r,w:s.w,tot,pct:tot?Math.round(100*s.r/tot):null,weak:tot>=2&&s.r/tot<.7};});}
+
+/* =========================================================
+   GLOSSARY (flashcard terms + lesson terms), A–Z
+   ========================================================= */
+const GL_EXTRA=[
+['pascal','Decision table','Rows are your actions, columns are states of the world, cells are outcomes.'],
+['moral','g (Oddie)','The good that comes from experimenting on embryos: the cures that will be developed.'],
+['moral','p (Oddie)','Your probability that embryos have the moral status of adult humans.'],
+['qaly','Micro / macro uses','Intra-personal: which treatment is best for you; which drug to fund for one condition. Inter-personal: who gets a scarce heart; which drugs for which diseases to fund (L8).'],
+['qaly','Adaptation worry','People living with a condition often rate it higher than people imagining it. Whose ratings should set QALY scores (L8)?'],
+['collective','Perfect replacement model','The store orders exactly as many chickens as it sold that day.'],
+['collective','Imperceptible-difference case','Each act makes a difference too small to perceive. Kagan argues these can\'t really exist for felt harms.'],
+['harms','Death (Norcross)','Other things equal, it\'s better that one person die than that five die (Gas 1).'],
+['harms','Transitivity','If A is better than B and B better than C, then A is better than C. Norcross uses it to get from Headache to Many Headaches.'],
+['bayes','Prior','Probability of a hypothesis before the evidence, relative to background knowledge K.'],
+['bayes','Likelihood','Pr(E|T): how likely the evidence is if the theory is true.'],
+['bayes','Posterior','Pr(T|E): probability of the theory given the evidence.'],
+['bayes','Miracle (Hume)','"A transgression of a law of nature by a particular volition of the Deity."'],
+['doomsday','Two-bin approximation','Replacing the many possible futures with just two hypotheses (Doom Soon, Doom Delayed).'],
+['te','Local utility','How much you value an outcome at one time (past, present or a future self).'],
+['te','Authenticity (Paul)','Choosing from your own first-person point of view. Deferring to others\' preferences is the mark of an inauthentic choice.'],
+];
+GL_EXTRA.push(
+['sim','Substrate-independence','A computer replicating a brain\'s computations in enough detail would be conscious (Bostrom takes it as given).'],
+['sim','Ancestor-simulation','A simulation of the entire mental history of humankind, run by a posthuman civilization.'],
+['sim','f_sim','The fraction of observers with human-type experiences who are simulated: f_P·f_I·N_I / (f_P·f_I·N_I + 1).'],
+['sim','Bland indifference principle','If a fraction x of observers like you are simulated and you can\'t tell which you are, your credence you\'re simulated should be x.'],
+['sim','Simulation trilemma','At least one: almost no civilizations reach posthumanity; almost none that do run ancestor-simulations; almost all people like us are simulated.'],
+['boltz','Boltzmann Brain (BB)','A brain formed by random fluctuation, radically deceived about its surroundings.'],
+['boltz','Ordinary Observer (OO)','An observer not massively deceived about their nearby surroundings.'],
+['boltz','BBU','Boltzmann Brain Universe: BBs with your exact experience vastly outnumber ordinary observers.'],
+['boltz','Bayes factor','Pr(E|H1)/Pr(E|H2). Posterior odds = prior odds × Bayes factor.'],
+['boltz','Center Indifference (CI)','Spread credence evenly over centered worlds compatible with your evidence (Elga, Builes). D&S reject it.'],
+['boltz','Intransitivity of confirmation','E can confirm F and F confirm G without E confirming G.'],
+['boltz','Egocentric content','Evidence about your own here and now: "here is an apple," not "an apple exists somewhere."'],
+);
+
+const GLOSS=[...CARDS.map(c=>[c.t,c.term,c.def]),...GL_EXTRA].sort((a,b)=>a[1].localeCompare(b[1],'en',{sensitivity:'base'}));
+
+/* =========================================================
+   QUIZ BANK = concept questions + generated calculations
+   ========================================================= */
+const BANK=[...MCQ.map((m,i)=>({id:'m'+i,kind:'mc',t:m.t,d:m.d,m})),
+  ...GEN_IDS.flatMap(g=>[1,2,3].map(d=>({id:'g:'+g+':'+d,kind:'calc',t:GENS[g].topic,d,g})))];
+
+/* =========================================================
+   APP SHELL
+   ========================================================= */
+let TAB='home'; const R={};
+function go(t,sub){TAB=t; const nav=(t==='mock')?'exams':t; $$('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===nav)); R[t](sub); window.scrollTo({top:0}); try{history.replaceState(null,'','#'+(t==='mock'?'exams':t));}catch(e){}}
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]'); if(b) go(b.dataset.tab);});
+document.addEventListener('click',e=>{const a=e.target.closest('[data-go]'); if(!a) return; e.preventDefault(); const [t,s]=a.dataset.go.split(':'); go(t,s);});
+
+/* ---------- HOME ---------- */
+R.home=function(){
+  const st=Object.fromEntries(topicStats().map(x=>[x.k,x])); const all=topicStats(); const weak=all.filter(x=>x.weak);
+  const unitCard=u=>`<section class="sheet day"><div class="date">Week ${u.wk}<span>${u.dates}<br>${esc(u.work)}</span></div><div class="stack" style="gap:8px">
+     <h3>${esc(u.title)}</h3>
+     <div class="row">${u.topics.map(k=>{const x=st[k];return `<a href="#" class="pill ${x.weak?'off':''}" data-go="learn:${k}" style="text-decoration:none">${TNAME[k]}${x.tot?' · '+x.pct+'%':''}</a>`}).join('')}</div>
+     <p class="small muted" style="margin:0">Reading: ${esc(u.read)}</p>
+     <div class="row"><button class="btn primary" data-go="quiz:unit${u.wk}">Quiz prep: Week ${u.wk}</button><button class="btn ghost" data-go="learn:${u.topics[0]}">Read the lessons →</button></div></div></section>`;
+  const d=daysTo(EXAM_DATE);
+  $('#main').innerHTML=`<div class="stack fade">
+  <section class="sheet"><h2>Choosing Wisely Gym</h2>
+    <p class="lede">Your study base for PHIL 204 with Prof. Peeters. Each week is a unit with its lessons, quiz questions, calculation drills and short answers. Before an exam, open a week and press <b>Quiz prep</b>.</p>
+    <div class="key" style="margin-top:10px"><b>Exam 2: Mon Nov 2</b>${d>0?` (${d} days)`:''}, in class, per the syllabus and schedule. It covers weeks 6–9 plus whatever is taught Oct 28–30. Slide L14 says the class is "semi-cumulative [i.e. expected utility; setting utility scales based on preference]." The Exam 2 study guide isn't posted yet. Next topic: the schedule is blank after 10.23 (Oct 26 is fall break; Oct 28 and 30 have no topic yet). When it fills in, tell Claude <b>"add this week"</b> and a new unit appears here, with your progress kept.</div>
+  </section>
+  ${UNITS.slice().reverse().map(unitCard).join('')}
+  <section class="sheet"><h3>Topic strength</h3>
+    <p class="small muted">From your Quiz, Calculation Lab and Short Answer Lab answers. A topic turns red below 70% (with at least 2 answers), and the quiz serves red topics more often.${Object.keys(FOCUS).length?` Topics you said feel weakest get extra weight: ${Object.keys(FOCUS).map(k=>TNAME[k]).join(', ')}.`:''}</p>
+    ${all.map(x=>`<div class="statrow ${x.weak?'weak':''}"><span class="lbl">${x.n}</span><div class="bar"><i style="width:${x.pct??0}%;${x.weak?'background:var(--fail)':''}"></i></div><span class="num">${x.tot?x.pct+'% · '+x.tot:'—'}</span></div>`).join('')}
+    ${weak.length?`<p style="margin-top:10px">Review next: ${weak.map(x=>`<a href="#" data-go="learn:${x.k}">${x.n}</a>`).join(', ')}</p>`:''}
+  </section>
+  <section class="sheet"><h3>Notes from the course materials</h3>
+    <ul class="small" style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px">
+    <li>Exam 1 study guide: technical questions "a lot like the HW problems"; calculator allowed, phones not.</li>
+    <li>HW4 answer key, Q3: weight-2 artist should be 5.4 (key: 5.2); EU<sub>w1</sub> = 7.78 and EU<sub>w2</sub> = 6.64 (key: 8.44, 6.98). Recomputed in code.</li>
+    <li>Oddie 1994 is a scanned PDF; that lesson is built from slides L5–L6. Doomsday, the simulation argument and Boltzmann brains have no slides yet; those lessons are from the readings (Leslie pp. 187–205, Bostrom 2003, Dogramaci &amp; Schoenfield 2024).</li>
+    <li>Homework in this course is AI-banned. Nothing here copies an unsubmitted homework set.</li></ul>
+  </section></div>`;
+};
+
+/* ---------- LEARN ---------- */
+const LORDER=['formula',...TOPICS.map(t=>t.id),'glossary'];
+let LCUR='formula';
+function tocHTML(){const st=Object.fromEntries(topicStats().map(s=>[s.k,s]));return `<div class="toc" style="margin-top:10px">${LORDER.map(k=>`<button aria-pressed="${k===LCUR}" data-l="${k}">${k==='formula'?'★ Formula sheet':k==='glossary'?'A–Z Glossary':TNAME[k]}${st[k]&&st[k].weak?'<span class="w bad">●</span>':''}</button>`).join('')}</div>`;}
+R.learn=function(sub){
+  if(sub&&(LESSONS[sub]||sub==='glossary')) LCUR=sub;
+  if(LCUR==='glossary'){renderGlossary();return;}
+  const l=LESSONS[LCUR]; S.learnSeen[LCUR]=1; save();
+  const i=LORDER.indexOf(LCUR), nx=LORDER[i+1];
+  $('#main').innerHTML=`<div class="stack fade">
+   <section class="sheet"><h2>Learn</h2><p class="lede">One sheet per topic: key terms in plain English, the argument or method step by step, objections and replies, common mistakes and a fully worked example. Topics are in the order Peeters taught them; the Home tab groups them by week.</p>${tocHTML()}</section>
+   <section class="sheet lesson"><div class="lessonhead"><h2>${l.title}</h2><span class="src">${esc(l.src)}</span></div>${l.html}
+   <div class="row" style="margin-top:16px">${l.topic?`<button class="btn primary" data-go="quiz:${l.topic}">Quiz me on this topic →</button>${GEN_IDS.some(g=>GENS[g].topic===l.topic)?`<button class="btn" data-go="calc:${l.topic}">Calculation Lab →</button>`:''}${SA.some(s=>s.t===l.topic)?`<button class="btn" data-go="sa:${l.topic}">Short Answer Lab →</button>`:''}`:''}
+   ${nx?`<button class="btn ghost" data-go="learn:${nx}">Next: ${nx==='glossary'?'Glossary':LESSONS[nx]?LESSONS[nx].title:TNAME[nx]} →</button>`:''}</div></section></div>`;
+  $$('.toc button').forEach(b=>b.onclick=()=>R.learn(b.dataset.l));
+};
+function termsHTML(list){return `<dl class="terms">${list.map(([t,term,def])=>`<dt>${esc(term)}</dt><dd><p>${esc(def)} <span class="src">· ${TNAME[t]}</span></p></dd>`).join('')}</dl>`;}
+const FL={deck:[],i:0,show:false,known:0};
+function renderGlossary(){
+  $('#main').innerHTML=`<div class="stack fade">
+   <section class="sheet"><h2>Learn</h2><p class="lede">Every term from the course in plain English, A to Z. Each lesson also opens with its own key terms.</p>${tocHTML()}</section>
+   <section class="sheet"><h3>Flashcards</h3><p class="small muted">Read the term, say what it means out loud, then flip the card. Cards you miss come back at the end of the deck.</p>
+     <div class="row" style="margin:8px 0"><select id="flt" style="width:auto"><option value="all">All topics (${GLOSS.length} terms)</option><option value="e2">Exam 2 topics</option>${TOPICS.map(t=>`<option value="${t.id}">${t.name} (${GLOSS.filter(g=>g[0]===t.id).length})</option>`).join('')}</select><button class="btn" id="flstart">Shuffle &amp; start</button></div>
+     <div id="flbox"></div></section>
+   <section class="sheet"><div class="lessonhead"><h2>A–Z Glossary</h2><span class="src">${GLOSS.length} terms</span></div>
+     <input type="text" id="gsearch" placeholder="Search a term, e.g. dominance, prior, QALY" style="margin:8px 0 4px" autocomplete="off">
+     <div id="glist"></div></section></div>`;
+  $$('.toc button').forEach(b=>b.onclick=()=>R.learn(b.dataset.l));
+  const draw=q=>{q=q.trim().toLowerCase(); const items=GLOSS.filter(x=>!q||(x[1]+' '+x[2]+' '+TNAME[x[0]]).toLowerCase().includes(q)); const letters=[...new Set(items.map(x=>x[1][0].toUpperCase()))];
+    $('#glist').innerHTML=items.length?letters.map(L=>`<h4>${L}</h4>${termsHTML(items.filter(x=>x[1][0].toUpperCase()===L))}`).join(''):'<p class="muted">No terms match.</p>';};
+  draw(''); $('#gsearch').addEventListener('input',e=>draw(e.target.value));
+  const start=()=>{const k=$('#flt').value; const src=k==='all'?GLOSS:k==='e2'?GLOSS.filter(x=>SCOPES.e2.topics.includes(x[0])):GLOSS.filter(x=>x[0]===k); FL.deck=shuffle(src.map(x=>x.slice())); FL.i=0;FL.show=false;FL.known=0;FL.total=FL.deck.length;card();};
+  const card=()=>{const box=$('#flbox'); if(!FL.deck.length){box.innerHTML='';return;}
+    if(FL.i>=FL.deck.length){box.innerHTML=`<div class="flash"><div class="term">Deck done</div><p class="muted" style="margin:0 auto">You knew ${FL.known} of ${FL.total} on the first try.</p><div class="row" style="justify-content:center"><button class="btn primary" id="flagain">Go again</button></div></div>`;$('#flagain').onclick=start;return;}
+    const c=FL.deck[FL.i];
+    box.innerHTML=`<div class="flash"><span class="pill" style="align-self:center">${esc(TNAME[c[0]])}</span><div class="term">${esc(c[1])}</div>${FL.show?`<p style="margin:0 auto">${esc(c[2])}</p><div class="row" style="justify-content:center"><button class="btn" id="flno">Didn't know it</button><button class="btn primary" id="flyes">Knew it</button></div>`:`<div class="row" style="justify-content:center"><button class="btn primary" id="flflip">Flip card</button></div>`}<span class="small muted">${FL.i+1} / ${FL.deck.length}</span></div>`;
+    if(FL.show){$('#flyes').onclick=()=>{if(!c.retry)FL.known++;FL.i++;FL.show=false;card();};$('#flno').onclick=()=>{const r=c.slice();r.retry=1;FL.deck.push(r);FL.i++;FL.show=false;card();};}
+    else $('#flflip').onclick=()=>{FL.show=true;card();};};
+  $('#flstart').onclick=start;
+}
+
+/* ---------- calculation problem renderer (Calc Lab, Quiz) ---------- */
+function probHTML(P,id,opts={}){
+  return `<div class="stack" style="gap:10px">${P.prompt.startsWith('<')?P.prompt:`<p style="margin:0">${P.prompt}</p>`}
+   <div class="parts">${P.parts.map((p,i)=>p.kind==='choice'?`<div class="stack" style="gap:6px"><b class="small">${p.label}</b><div class="choices">${p.options.map((o,j)=>`<button data-pp="${i}" data-o="${j}" class="${opts.ans&&opts.ans['c'+i]==j?'sel':''}"><span class="k">${'ABCD'[j]}</span><span>${o}</span></button>`).join('')}</div></div>`
+     :`<label class="part"><span>${p.label}</span><input type="text" class="ans" data-pp="${i}" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder=".25 or 1/4" value="${esc(opts.ans&&opts.ans['n'+i]||'')}"></label>`).join('')}</div></div>`;
+}
+function wireChoices(root,store){$$('.choices button[data-pp]',root).forEach(b=>b.onclick=()=>{if(root.dataset.done)return;const i=b.dataset.pp;$$(`.choices button[data-pp="${i}"]`,root).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');if(store)store('c'+i,+b.dataset.o);});}
+function gradeProb(P,root,mark=true){
+  const res=P.parts.map((p,i)=>{
+    if(p.kind==='choice'){const s=$(`.choices button.sel[data-pp="${i}"]`,root);const v=s?+s.dataset.o:null;const ok=v===p.answer;
+      if(mark)$$(`.choices button[data-pp="${i}"]`,root).forEach(x=>{const o=+x.dataset.o;if(o===p.answer)x.classList.add('right');else if(o===v)x.classList.add('wrong');});
+      return {ok,label:p.label,given:v==null?'(none)':p.options[v],ans:p.options[p.answer]};}
+    const inp=$(`input[data-pp="${i}"]`,root);const ok=close(parseAns(inp.value),p.answer,p.tol);if(mark){inp.classList.remove('ok','bad');inp.classList.add(ok?'ok':'bad');}
+    return {ok,label:p.label,given:inp.value||'(blank)',ans:fp(p.answer)};});
+  root.dataset.done='1';
+  return {res,allOk:res.every(r=>r.ok),frac:res.filter(r=>r.ok).length/res.length};
+}
+function solutionHTML(P,g){return `<div class="verdict ${g.allOk?'ok':'bad'} fade"><strong class="${g.allOk?'ok':'bad'}">${g.allOk?'Correct.':'Not quite.'}</strong>
+  ${g.res.filter(r=>!r.ok).map(r=>`<p class="small" style="margin:4px 0 0">${esc(r.label)}: you gave <span class="mono">${esc(r.given)}</span>; answer <span class="mono">${esc(r.ans)}</span></p>`).join('')}
+  <h4>Steps</h4><ol class="steps">${P.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>`;}
+
+/* ---------- CALCULATION LAB ---------- */
+const CL={gen:null,level:2,P:null,checked:false};
+R.calc=function(sub){
+  if(sub&&TNAME[sub]){CL.gen=GEN_IDS.find(g=>GENS[g].topic===sub)||CL.gen;CL.P=null;}
+  if(!CL.gen) CL.gen=GEN_IDS[0];
+  if(!CL.P){CL.P=GENS[CL.gen].gen(CL.level);CL.checked=false;}
+  const groups=TOPICS.map(t=>({t,g:GEN_IDS.filter(x=>GENS[x].topic===t.id)})).filter(x=>x.g.length);
+  $('#main').innerHTML=`<div class="stack fade">
+  <section class="sheet"><h2>Calculation Lab</h2><p class="lede">Decision tables, expected value and utility, dominance, QALY, probability and Bayes. Every problem is generated fresh, you fill in the answers, and it checks them and shows every step. Answers can be decimals, fractions (3/8) or percentages (37.5%).</p>
+   ${groups.map(G=>`<h4>${G.t.name}</h4><div class="tlist">${G.g.map(x=>{const s=S.gens[x];return `<button aria-pressed="${x===CL.gen}" data-gen="${x}" class="${s&&s.r?'done':''}">${GENS[x].name}<span class="st">${s?`${s.r}/${s.r+s.w} right`:'not tried'}</span></button>`;}).join('')}</div>`).join('')}</section>
+  <section class="sheet" id="cl"><div class="qhead"><h3>${GENS[CL.gen].name}</h3><div class="seg">${[1,2,3].map(l=>`<button aria-pressed="${l===CL.level}" data-lv="${l}">Level ${l}</button>`).join('')}</div></div>
+   ${probHTML(CL.P,'cl')}
+   <div class="row" style="margin-top:12px"><button class="btn primary" id="clcheck">Check</button><button class="btn" id="clhint">Hint: setup</button><button class="btn ghost" id="clnew">New problem →</button></div>
+   <div id="clfb" style="margin-top:12px"></div></section></div>`;
+  const root=$('#cl'); wireChoices(root);
+  $$('[data-gen]').forEach(b=>b.onclick=()=>{CL.gen=b.dataset.gen;CL.P=null;R.calc();});
+  $$('[data-lv]').forEach(b=>b.onclick=()=>{CL.level=+b.dataset.lv;CL.P=null;R.calc();});
+  $('#clnew').onclick=()=>{CL.P=null;R.calc();};
+  $('#clhint').onclick=()=>{$('#clfb').innerHTML=`<div class="key small"><b>Setup:</b> ${CL.P.steps[0]}</div>`;};
+  $('#clcheck').onclick=()=>{if(CL.checked){CL.P=null;R.calc();return;} const g=gradeProb(CL.P,root); CL.checked=true; bump(GENS[CL.gen].topic,g.allOk,CL.gen);
+    $('#clfb').innerHTML=solutionHTML(CL.P,g); $('#clcheck').textContent='Next problem →'; $('#clhint').hidden=true;};
+};
+
+/* ---------- SHORT ANSWER LAB ---------- */
+const FORMAT={
+ pc:{name:'Premise–conclusion',tip:'Number the premises (P1), (P2)… then (C). One claim per premise, in the course\'s terms (e.g. Claim1/Claim2/Claim3; g, p, l). The conclusion must follow from the premises.'},
+ ex:{name:'Explain in 2–4 sentences',tip:'Define it in plain English, say what work it does in the argument, and give one concrete example from the course. Stop at four sentences.'},
+ or:{name:'Objection + reply',tip:'(1) State the objection and name the premise or step it attacks. (2) Give the reply and say why it works, or doesn\'t. Use a case or number from the reading if one fits.'},
+};
+let SCUR=null;
+R.sa=function(sub){
+  if(sub&&TNAME[sub]){const f=SA.find(s=>s.t===sub); if(f) SCUR=f.id;}
+  if(!SCUR) SCUR=SA[0].id;
+  const it=SA.find(s=>s.id===SCUR); const st=S.sa[it.id]||{};
+  $('#main').innerHTML=`<div class="stack fade">
+  <section class="sheet"><h2>Short Answer Lab</h2><p class="lede">The exams ask for short written answers alongside the calculations. Practise the three shapes below, then compare your answer with a model answer built from the slides and readings, and score yourself on the rubric.</p>
+   <div class="grid2" style="margin-top:8px">${Object.values(FORMAT).map(F=>`<div class="key small"><b>${F.name}.</b> ${F.tip}</div>`).join('')}</div>
+   ${TOPICS.filter(t=>SA.some(s=>s.t===t.id)).map(t=>`<h4>${t.name}</h4><div class="tlist">${SA.filter(s=>s.t===t.id).map(s=>{const x=S.sa[s.id];return `<button aria-pressed="${s.id===SCUR}" data-sa="${s.id}" class="${x&&x.score!=null?'done':''}">${FORMAT[s.type].name}<span class="st">${x&&x.score!=null?`${x.score}/${x.max}`:'not tried'}</span></button>`;}).join('')}</div>`).join('')}</section>
+  <section class="sheet" id="sabox"><div class="qmeta"><span class="pill">${TNAME[it.t]}</span><span class="pill lvl">${FORMAT[it.type].name}</span></div>
+   <h3 style="margin:10px 0">${esc(it.q)}</h3>
+   <textarea id="saw" rows="9" placeholder="Write it as you would on the exam.">${esc(st.draft||'')}</textarea>
+   <div class="row" style="margin-top:10px"><button class="btn primary" id="sacmp">Compare with model answer</button><span class="small muted">Your draft saves as you type.</span></div>
+   <div id="safb" style="margin-top:12px"></div></section></div>`;
+  $$('[data-sa]').forEach(b=>b.onclick=()=>{SCUR=b.dataset.sa;R.sa();});
+  $('#saw').addEventListener('input',e=>{(S.sa[it.id]=S.sa[it.id]||{}).draft=e.target.value;save();});
+  $('#sacmp').onclick=()=>{ if($('#saw').value.trim().length<20){toast('Write your answer first');return;}
+    const scored=it.pts.filter(p=>!/bonus/i.test(p)).length;
+    $('#safb').innerHTML=`<div class="key fade"><b>Model answer</b><div class="modelans">${esc(it.model)}</div><b>Rubric: tick only what your answer actually says</b>
+     <ul class="rubric">${it.pts.map((p,i)=>`<li><label><input type="checkbox" data-r="${i}" ${/bonus/i.test(p)?'data-bonus="1"':''}> <span>${esc(p)}</span></label></li>`).join('')}</ul>
+     <div class="row" style="margin-top:8px"><button class="btn primary" id="sarec">Record score</button><span class="small muted">Out of ${scored}${it.pts.length>scored?' (bonus points don\'t raise the max)':''}</span></div></div>`;
+    $('#sarec').onclick=()=>{const n=Math.min(scored,$$('#safb input:checked').length); const x=S.sa[it.id]=S.sa[it.id]||{}; x.score=n;x.max=scored;x.at=Date.now(); bump(it.t,n/scored>=.75); save();
+      $('#sarec').outerHTML=`<p style="margin:0"><b class="${n/scored>=.75?'ok':'bad'}">${n}/${scored}</b> recorded. ${n/scored>=.75?'Good. Try a different prompt.':'Rewrite it using the model\'s structure, then score it again.'}</p>`;};
+  };
+};
+
+/* ---------- QUIZ ---------- */
+const Q={mode:'adaptive',topic:null,unit:null,level:1,streak:0,cur:null,P:null,answered:false,lastWrong:null,sess:{r:0,w:0},seen:new Set()};
+function pool(){let p=BANK; if(Q.mode==='topic'&&Q.topic) p=p.filter(q=>q.t===Q.topic); if(Q.mode==='unit'){const u=UNITS.find(x=>x.wk===Q.unit)||UNITS[UNITS.length-1]; p=p.filter(q=>u.topics.includes(q.t));} return p;}
+function pickNext(){
+  let p=pool(); if(!p.length) return null;
+  if(Q.lastWrong){const lw=Q.lastWrong; if(lw.kind==='calc') return lw; const sim=p.filter(q=>q.t===lw.t&&q.id!==lw.id&&!Q.seen.has(q.id)); if(sim.length){sim.sort((a,b)=>Math.abs(a.d-lw.d)-Math.abs(b.d-lw.d)); const best=sim.filter(q=>q.d===sim[0].d); return pick(best);}}
+  let cand=p.filter(q=>!Q.seen.has(q.id)); if(!cand.length){Q.seen.clear();cand=p;}
+  const lv=cand.filter(q=>q.d<=Q.level); if(lv.length) cand=lv; const top=cand.filter(q=>q.d===Q.level); if(top.length&&Math.random()<.65) cand=top;
+  const w=cand.map(q=>{const s=S.stats[q.t]||{r:0,w:0}; return ((s.w+1)/(s.r+1))*(FOCUS[q.t]||1)*(q.kind==='calc'?0.6:1);});
+  let tot=w.reduce((a,b)=>a+b,0),r=Math.random()*tot; for(let i=0;i<cand.length;i++){r-=w[i]; if(r<=0) return cand[i];} return cand[cand.length-1];
+}
+R.quiz=function(sub){
+  if(sub&&TNAME[sub]){Q.mode='topic';Q.topic=sub;Q.cur=null;Q.lastWrong=null;Q.level=1;Q.streak=0;}
+  if(sub&&/^unit\d+$/.test(sub)){Q.mode='unit';Q.unit=+sub.slice(4);Q.cur=null;Q.lastWrong=null;Q.level=1;Q.streak=0;}
+  if(sub==='e2'){Q.mode='adaptive';Q.cur=null;}
+  if(!Q.cur){Q.cur=pickNext();Q.answered=false;Q.P=Q.cur&&Q.cur.kind==='calc'?GENS[Q.cur.g].gen(Q.cur.d):null;Q.order=Q.cur&&Q.cur.kind==='mc'?shuffle(Q.cur.m.o.map((_,i)=>i)):null;}
+  renderQuiz();
+};
+function renderQuiz(){
+  const q=Q.cur, st=topicStats();
+  $('#main').innerHTML=`<div class="stack fade">
+  <section class="sheet"><h2>Quiz</h2><p class="lede">One question at a time, mixing concept questions and calculations. It starts easy and moves up a level after 3 right in a row. After a miss, the next question is a similar one on the same topic, and weak topics come up more often.</p>
+   <div class="row" style="margin-top:10px">
+    <div class="seg"><button aria-pressed="${Q.mode==='adaptive'}" data-m="adaptive">Everything</button><button aria-pressed="${Q.mode==='unit'}" data-m="unit">One week</button><button aria-pressed="${Q.mode==='topic'}" data-m="topic">One topic</button></div>
+    ${Q.mode==='topic'?`<select id="qtopic" style="width:auto" aria-label="topic">${TOPICS.map(t=>`<option value="${t.id}" ${t.id===Q.topic?'selected':''}>${t.name}</option>`).join('')}</select>`:''}
+    ${Q.mode==='unit'?`<select id="qunit" style="width:auto" aria-label="week">${UNITS.map(u=>`<option value="${u.wk}" ${u.wk===Q.unit?'selected':''}>Week ${u.wk}: ${esc(u.title)}</option>`).join('')}</select>`:''}
+   </div>
+   <div class="scoreline" style="margin-top:10px"><span>Session <b>${Q.sess.r}/${Q.sess.r+Q.sess.w}</b></span><span>Level <b>${Q.level}</b> of 3</span><span>Streak <b>${Q.streak}</b></span><span>Weak: <b>${st.filter(s=>s.weak).map(s=>s.n).join(', ')||'none yet'}</b></span></div></section>
+  ${q?`<section class="sheet" id="qcard"><div class="qmeta"><span class="pill">${TNAME[q.t]}</span><span class="pill lvl">${'●'.repeat(q.d)}${'○'.repeat(3-q.d)} level ${q.d}</span><span class="pill lvl">${q.kind==='calc'?'calculation':'concept'}</span>${Q.lastWrong&&q.t===Q.lastWrong.t?'<span class="pill off">similar question</span>':''}</div>
+   <div style="margin-top:12px">${q.kind==='mc'?`<p><b>${q.m.q}</b></p><div class="choices">${Q.order.map((i,k)=>`<button data-c="${i}"><span class="k">${'ABCD'[k]}</span><span>${q.m.o[i]}</span></button>`).join('')}</div>`:probHTML(Q.P,'q')}</div>
+   <div class="row" style="margin-top:12px"><button class="btn primary" id="qsubmit">Check answer</button><button class="btn ghost" id="qskip">Skip</button></div>
+   <div id="qfb" style="margin-top:12px"></div></section>`:'<section class="sheet">No questions match these filters.</section>'}</div>`;
+  $$('.seg button').forEach(b=>b.onclick=()=>{Q.mode=b.dataset.m; if(Q.mode==='topic'&&!Q.topic)Q.topic='bayes'; if(Q.mode==='unit'&&!Q.unit)Q.unit=UNITS[UNITS.length-1].wk; Q.cur=null;Q.lastWrong=null;Q.level=1;Q.streak=0;R.quiz();});
+  const su=$('#qunit'); if(su) su.onchange=()=>{Q.unit=+su.value;Q.cur=null;Q.lastWrong=null;Q.level=1;Q.streak=0;R.quiz();};
+  const sel=$('#qtopic'); if(sel) sel.onchange=()=>{Q.topic=sel.value;Q.cur=null;Q.lastWrong=null;Q.level=1;Q.streak=0;R.quiz();};
+  if(!q) return;
+  const card=$('#qcard'); let pickc=null;
+  if(q.kind==='mc') $$('.choices button[data-c]',card).forEach(b=>b.onclick=()=>{if(Q.answered)return;$$('.choices button[data-c]',card).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');pickc=+b.dataset.c;});
+  else wireChoices(card);
+  $('#qskip').onclick=()=>{Q.seen.add(q.id);Q.cur=null;Q.lastWrong=null;R.quiz();};
+  $('#qsubmit').onclick=()=>{
+    if(Q.answered){Q.cur=null;R.quiz();return;}
+    let right, fb;
+    if(q.kind==='mc'){ if(pickc===null){toast('Pick an answer first');return;} right=pickc===q.m.a;
+      $$('.choices button[data-c]',card).forEach(b=>{const i=+b.dataset.c; if(i===q.m.a)b.classList.add('right'); else if(i===pickc)b.classList.add('wrong');});
+      fb=`<div class="verdict ${right?'ok':'bad'} fade"><strong class="${right?'ok':'bad'}">${right?'Correct.':'Not quite.'}</strong>${right?'':`<p style="margin:6px 0 0"><b>Answer:</b> ${q.m.o[q.m.a]}</p>`}<p style="margin:6px 0 0">${q.m.e}</p>${right?'':`<p class="small" style="margin:8px 0 0">Next up is a similar question. If this topic stays shaky, <a href="#" data-go="learn:${q.t}">re-read ${TNAME[q.t]}</a>.</p>`}</div>`; }
+    else { if(!$$('input[data-pp]',card).some(i=>i.value.trim())&&!$('.choices button.sel',card)){toast('Enter an answer first');return;}
+      const g=gradeProb(Q.P,card); right=g.allOk; fb=solutionHTML(Q.P,g)+(right?'':`<p class="small" style="margin:8px 0 0">Next up is a fresh problem of the same kind. <a href="#" data-go="learn:${q.t}">Re-read ${TNAME[q.t]}</a> if the steps didn't click.</p>`); }
+    Q.answered=true; Q.seen.add(q.id); bump(q.t,right,q.kind==='calc'?q.g:null);
+    if(right){Q.sess.r++;Q.streak++;Q.lastWrong=null;if(Q.streak>=3&&Q.level<3){Q.level++;Q.streak=0;}}
+    else{Q.sess.w++;Q.streak=0;Q.lastWrong=q;}
+    $('#qfb').innerHTML=fb; $('#qsubmit').textContent='Next question →'; $('#qskip').hidden=true; $$('input',card).forEach(i=>i.readOnly=true); $('#qsubmit').focus();
+  };
+}
+
+/* ---------- EXAMS ---------- */
+const EXDEF={
+ e2:{title:'Mock Exam 2',when:'Mon Nov 2',minutes:50,topics:SCOPES.e2.topics,
+   note:'New questions on the Exam 2 material (weeks 6–9 plus the cumulative expected-utility and utility-scale techniques). Calculations are auto-checked; for short answers you compare against the model answer and rubric and enter your own score. Calculator allowed. The real exam\'s length and point split aren\'t in the course materials; this uses 50 minutes and 50 points.',
+   parts:[{n:1,title:'Expected utility / utility scales',pts:8,type:'calc',gens:['util_indiff','util_solve','ev_insurance','ev_twoact','util_threshold']},
+     {n:2,title:'Probability',pts:8,type:'calc',gens:['prob_cards','prob_atleast','prob_seq','cond_prob','norcross']},
+     {n:3,title:'Bayes',pts:10,type:'calc',gens:['bayes_test','hume','doom','bayes_urn']},
+     {n:4,title:'Concepts',pts:4,type:'mc',count:4},
+     {n:5,title:'Argument in premise–conclusion form',pts:10,type:'sa',kinds:['pc']},
+     {n:6,title:'Objection + reply, or explanation',pts:10,type:'sa',kinds:['or','ex']}]},
+ e1:{title:'Exam 1 review mock',when:'taken Sep 28',minutes:50,topics:SCOPES.e1.topics,
+   note:'Same format on the Exam 1 topics. Useful review if the final is cumulative (the syllabus doesn\'t say).',
+   parts:[{n:1,title:'Decision table: dominance / expected value / Oddie',pts:8,type:'calc',gens:['ev_twoact','dominance','oddie','ev_breakeven']},
+     {n:2,title:'QALY',pts:8,type:'calc',gens:['qaly_annual','qaly_onetime','qaly_maxtto','qaly_scores']},
+     {n:3,title:'Utility weighting or collective action',pts:10,type:'calc',gens:['te_global','kagan','util_solve']},
+     {n:4,title:'Concepts',pts:4,type:'mc',count:4},
+     {n:5,title:'Argument in premise–conclusion form',pts:10,type:'sa',kinds:['pc']},
+     {n:6,title:'Objection + reply, or explanation',pts:10,type:'sa',kinds:['or','ex']}]},
+};
+EXDEF.e2.parts[1].gens.push('sim_frac'); EXDEF.e2.parts[2].gens.push('bb_bayes');
+function weightedPick(arr,topicOf){const w=arr.map(x=>{const s=S.stats[topicOf(x)]||{r:0,w:0};return ((s.w+1)/(s.r+1))*(FOCUS[topicOf(x)]||1);});let r=Math.random()*w.reduce((a,b)=>a+b,0);for(let i=0;i<arr.length;i++){r-=w[i];if(r<=0)return arr[i];}return arr[arr.length-1];}
+function newAttempt(k){const E=EXDEF[k]; const items=E.parts.map(p=>{
+  if(p.type==='calc'){const g=weightedPick(p.gens,x=>GENS[x].topic); return {g,topic:GENS[g].topic,P:GENS[g].gen(pick([2,2,3]))};}
+  if(p.type==='mc'){const qs=shuffle(MCQ.map((m,i)=>i).filter(i=>E.topics.includes(MCQ[i].t)&&MCQ[i].d>=2)).slice(0,p.count); return {qs:qs.map(i=>({i,order:shuffle(MCQ[i].o.map((_,j)=>j))}))};}
+  const cand=SA.filter(s=>E.topics.includes(s.t)&&p.kinds.includes(s.type)); const s=weightedPick(cand,x=>x.t); return {sa:s.id,topic:s.t};});
+  S.exams[k]={items,a:{},score:{},graded:false,left:E.minutes*60,at:Date.now()}; save();}
+const TIMERS={};
+R.exams=function(){
+  const tot=k=>{const e=S.exams[k]; if(!e||!e.graded) return null; let t=0; EXDEF[k].parts.forEach((p,pi)=>{const v=parseFloat(e.score[pi]); if(!isNaN(v)) t+=Math.min(v,p.pts);}); return t;};
+  const card=k=>{const E=EXDEF[k],t=tot(k);return `<section class="sheet stack" style="gap:8px"><div class="lessonhead"><h3>${E.title}</h3><span class="src">${E.when} · ${t!=null?`<b>${t}/50</b> last graded`:'not graded yet'}</span></div><p class="small muted" style="margin:0">${E.note}</p><div class="row"><button class="btn primary" data-go="mock:${k}">Open</button></div></section>`;};
+  const fd=daysTo('2026-12-15');
+  $('#main').innerHTML=`<div class="stack fade">
+  <section class="sheet"><h2>Exams</h2><p class="lede">Timed practice in the course's format: technical questions like the homework, plus short written answers. Each attempt generates new questions, weighted toward your weak topics.</p></section>
+  ${card('e2')}
+  <section class="sheet stack" style="gap:8px"><div class="lessonhead"><h3>Final exam</h3><span class="src">${FINAL.date}, ${FINAL.time}, ${FINAL.where} (syllabus)${fd>0?` · ${fd} days`:''}</span></div>
+    <p class="small muted" style="margin:0">Waiting on the rest of the semester. The schedule is blank after Oct 23 and the final's study guide isn't posted. Once the remaining units are added, a cumulative mock final and a day-by-day plan will be built here, weighted toward your weak topics. Tell Claude when the study guide is up.</p></section>
+  ${card('e1')}</div>`;
+};
+R.mock=function(k){k=EXDEF[k]?k:'e2'; R.mock.k=k; if(!S.exams[k]||!S.exams[k].items) newAttempt(k); renderExam(k);};
+function fmtT(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function renderExam(k){
+  const E=EXDEF[k], st=S.exams[k], g=st.graded;
+  $('#main').innerHTML=`<div class="stack fade">
+  <section class="sheet"><div class="row" style="margin-bottom:8px"><button class="btn ghost" data-go="exams">← All exams</button></div><h2>${E.title}</h2><p class="lede">${E.note}</p></section>
+  <section class="sheet examhead"><div><div class="timer ${st.left<300?'low':''}" id="tm">${fmtT(st.left)}</div><span class="small muted">${E.minutes}-minute timer · 50 points</span></div>
+   <div class="row"><button class="btn primary" id="tmgo">${TIMERS[k]?'Pause':'Start timer'}</button><button class="btn ghost" id="tmreset">Reset timer</button>
+   <button class="btn" id="exgrade">${g?'Re-grade':'Finish & grade'}</button><button class="btn ghost" id="exnew">New attempt</button></div></section>
+  ${E.parts.map((p,pi)=>partHTML(k,p,pi)).join('')}
+  <section class="sheet" id="exsum">${g?summaryHTML(k):'<p class="muted" style="margin:0">Press <b>Finish &amp; grade</b> when you\'re done. Parts 1–4 are auto-checked. For parts 5 and 6, tick the rubric against the model answer and your score fills in.</p>'}</section></div>`;
+  // restore + persist answers
+  E.parts.forEach((p,pi)=>{const root=$('#part'+pi);
+    if(p.type==='calc'){ wireChoices(root,(key,v)=>{st.a[pi+':'+key]=v;save();}); $$('input[data-pp]',root).forEach(inp=>{inp.value=st.a[pi+':n'+inp.dataset.pp]||'';inp.addEventListener('input',()=>{st.a[pi+':n'+inp.dataset.pp]=inp.value;save();});});
+      Object.keys(st.a).filter(x=>x.startsWith(pi+':c')).forEach(x=>{const b=$(`.choices button[data-pp="${x.split(':c')[1]}"][data-o="${st.a[x]}"]`,root); if(b) b.classList.add('sel');});
+      if(g){ const r=gradeProb(st.items[pi].P,root); root.querySelector('.solbox').innerHTML=solutionHTML(st.items[pi].P,r);} }
+    if(p.type==='mc'){ st.items[pi].qs.forEach((q,qi)=>{const box=$(`[data-mq="${qi}"]`,root); const chosen=st.a[pi+':m'+qi];
+      $$('button',box).forEach(b=>{ if(+b.dataset.c===chosen) b.classList.add('sel'); b.onclick=()=>{ if(st.graded) return; $$('button',box).forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); st.a[pi+':m'+qi]=+b.dataset.c; save(); }; });
+      if(g){const m=MCQ[q.i]; $$('button',box).forEach(b=>{const c=+b.dataset.c; if(c===m.a) b.classList.add('right'); else if(c===chosen) b.classList.add('wrong');});} }); }
+    if(p.type==='sa'){ const ta=$('textarea',root); ta.value=st.a[pi+':t']||''; ta.addEventListener('input',()=>{st.a[pi+':t']=ta.value;save();});
+      $$('input[data-r]',root).forEach(c=>{c.checked=!!(st.a[pi+':r']||{})[c.dataset.r]; c.addEventListener('change',()=>{const m=st.a[pi+':r']=st.a[pi+':r']||{}; m[c.dataset.r]=c.checked; const it=SA.find(s=>s.id===st.items[pi].sa); const scored=it.pts.filter(x=>!/bonus/i.test(x)).length; const n=Math.min(scored,$$('input[data-r]:checked',root).length); st.score[pi]=Math.round(p.pts*n/scored*2)/2; save(); $('[data-score="'+pi+'"]',root).value=st.score[pi]; $('#exsum').innerHTML=summaryHTML(k);});});
+      const sc=$('[data-score]',root); if(sc) sc.addEventListener('input',()=>{st.score[pi]=sc.value;save();$('#exsum').innerHTML=summaryHTML(k);}); }
+  });
+  $('#tmgo').onclick=()=>{if(TIMERS[k]){clearInterval(TIMERS[k]);TIMERS[k]=null;$('#tmgo').textContent='Resume';}else{TIMERS[k]=setInterval(()=>{st.left=Math.max(0,st.left-1);save();const t=$('#tm');if(t&&TAB==='mock'&&R.mock.k===k){t.textContent=fmtT(st.left);t.classList.toggle('low',st.left<300);}if(st.left===0){clearInterval(TIMERS[k]);TIMERS[k]=null;toast("Time's up: pens down");}},1000);$('#tmgo').textContent='Pause';}};
+  $('#tmreset').onclick=()=>{clearInterval(TIMERS[k]);TIMERS[k]=null;st.left=E.minutes*60;save();renderExam(k);};
+  $('#exgrade').onclick=()=>{autoGrade(k);st.graded=true;save();renderExam(k);$('#exsum').scrollIntoView({behavior:'smooth'});};
+  const nb=$('#exnew'); nb.onclick=()=>{ if(nb.dataset.arm){clearInterval(TIMERS[k]);TIMERS[k]=null;newAttempt(k);renderExam(k);toast('New questions generated');} else {nb.dataset.arm='1';nb.textContent='Click again to discard this attempt';setTimeout(()=>{if(nb.isConnected){delete nb.dataset.arm;nb.textContent='New attempt';}},4000);} };
+}
+function partHTML(k,p,pi){
+  const st=S.exams[k], it=st.items[pi], g=st.graded; let body='';
+  if(p.type==='calc') body=`${probHTML(it.P,'x'+pi)}<div class="solbox" style="margin-top:10px"></div>`;
+  else if(p.type==='mc') body=it.qs.map((q,qi)=>{const m=MCQ[q.i];return `<div class="stack" style="gap:6px;margin-bottom:12px" ><p style="margin:0"><b>(${'abcd'[qi]})</b> ${m.q}</p><div class="choices" data-mq="${qi}">${q.order.map((i,j)=>`<button data-c="${i}"><span class="k">${'ABCD'[j]}</span><span>${m.o[i]}</span></button>`).join('')}</div>${g?`<p class="small muted" style="margin:0">${m.e}</p>`:''}</div>`;}).join('');
+  else { const s=SA.find(x=>x.id===it.sa);
+    body=`<p><b>${esc(s.q)}</b></p><p class="small muted">${FORMAT[s.type].tip}</p><textarea rows="9" placeholder="Your answer"></textarea>
+    ${g?`<div class="key" style="margin-top:10px"><b>Model answer</b><div class="modelans">${esc(s.model)}</div><b>Rubric: tick what your answer actually says</b><ul class="rubric">${s.pts.map((x,i)=>`<li><label><input type="checkbox" data-r="${i}"> <span>${esc(x)}</span></label></li>`).join('')}</ul>
+      <div class="selfscore" style="margin-top:8px"><label for="sc-${k}-${pi}">Your score</label><input type="text" inputmode="decimal" id="sc-${k}-${pi}" data-score="${pi}" value="${esc(st.score[pi]??'')}"> / ${p.pts}</div></div>`:''}`; }
+  return `<section class="sheet" id="part${pi}"><div class="qhead"><h3>${p.n}) ${esc(p.title)}</h3><span class="pts">[${p.pts} pts]</span></div>${body}</section>`;
+}
+function autoGrade(k){const E=EXDEF[k],st=S.exams[k]; E.parts.forEach((p,pi)=>{const it=st.items[pi];
+  if(p.type==='calc'){const root=$('#part'+pi); const r=gradeProb(it.P,root,false); st.score[pi]=Math.round(p.pts*r.frac*2)/2; if(!st.graded) bump(it.topic,r.allOk,it.g);}
+  if(p.type==='mc'){let s=0; it.qs.forEach((q,qi)=>{const ok=st.a[pi+':m'+qi]===MCQ[q.i].a; if(ok) s++; if(!st.graded) bump(MCQ[q.i].t,ok);}); st.score[pi]=s;}
+  if(p.type==='sa'&&!(st.a[pi+':t']||'').trim()) st.score[pi]=0; });}
+function partTopic(k,pi){const p=EXDEF[k].parts[pi],it=S.exams[k].items[pi]; if(p.type==='calc') return it.topic; if(p.type==='sa') return it.topic; const ts=it.qs.map(q=>MCQ[q.i].t); return ts[0];}
+function summaryHTML(k){const E=EXDEF[k],st=S.exams[k]; let tot=0; const rows=E.parts.map((p,pi)=>{const v=parseFloat(st.score[pi]); const s=isNaN(v)?null:Math.min(v,p.pts); if(s!=null) tot+=s; return {p,pi,s};});
+  const review=rows.filter(r=>r.s==null||r.s/r.p.pts<.7);
+  return `<h3>Score</h3><div class="row" style="align-items:baseline;gap:12px;margin:6px 0 10px"><span class="total">${tot}</span><span class="muted">/ 50 · ${Math.round(tot*2)}%</span></div>
+  ${rows.map(r=>`<div class="statrow"><span class="lbl">Q${r.p.n} ${esc(r.p.title)}</span><div class="bar"><i style="width:${r.s==null?0:100*r.s/r.p.pts}%;${r.s!=null&&r.s/r.p.pts<.7?'background:var(--fail)':''}"></i></div><span class="num">${r.s==null?'score?':r.s+'/'+r.p.pts}</span></div>`).join('')}
+  <h4>What to review</h4>${review.length?`<ul style="margin:0;padding-left:18px">${review.map(r=>{const t=partTopic(k,r.pi);return `<li>Q${r.p.n} (${esc(r.p.title)}): ${r.s==null?'tick the rubric above to score it. ':''}re-read <a href="#" data-go="learn:${t}">${TNAME[t]}</a>, then ${r.p.type==='calc'?`do three <a href="#" data-go="calc:${t}">Calculation Lab</a> problems`:r.p.type==='sa'?`rewrite it in the <a href="#" data-go="sa:${t}">Short Answer Lab</a>`:`run a <a href="#" data-go="quiz:${t}">topic quiz</a>`}.</li>`;}).join('')}</ul>`:'<p class="ok"><b>Every part is at 70% or above.</b> Start a new attempt, or spend the time on the quiz.</p>'}`;}
+
+/* boot */
+(function(){const h=(location.hash||'').slice(1); go(R[h]&&h!=='mock'?h:'home');})();
+</script>
+
+</body></html>
